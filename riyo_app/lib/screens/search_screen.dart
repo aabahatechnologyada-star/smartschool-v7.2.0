@@ -108,13 +108,29 @@ class _SearchScreenState extends State<SearchScreen> with SingleTickerProviderSt
           ),
         ),
       ),
-      body: TabBarView(
-        controller: _tabController,
-        children: [
-          _buildResultsTab(),
-          _buildResultsTab(),
-          _buildPeopleTab(),
-        ],
+      body: XRefreshIndicator(
+        onRefresh: () => setState(() {
+          _query = '';
+          _results.clear();
+        }),
+        child: StateBody<bool>(
+          loading: _searching,
+          error: false,
+          data: true,
+          isEmpty: (d) => !d,
+          onRetry: () => setState(() {}),
+          emptyTitle: 'No search yet',
+          emptyMessage: 'Start searching to find students, notices, and more.',
+          emptyIcon: Icons.search_off_rounded,
+          builder: (_) => TabBarView(
+            controller: _tabController,
+            children: [
+              _buildResultsTab(),
+              _buildResultsTab(),
+              _buildPeopleTab(),
+            ],
+          ),
+        ),
       ),
     );
   }
