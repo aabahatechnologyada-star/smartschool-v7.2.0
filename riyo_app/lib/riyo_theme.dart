@@ -9,6 +9,7 @@ class RiyoTheme {
   static const Color gray800 = Color(0xFF2D2D2D);   // Elevated surfaces
   static const Color gray700 = Color(0xFF3D3D3D);   // Borders, dividers
   static const Color gray600 = Color(0xFF525252);   // Muted text, icons
+  static const Color gray500 = Color(0xFF737373);   // Disabled, timestamps
   static const Color gray400 = Color(0xFFA3A3A3);   // Secondary text
   static const Color gray300 = Color(0xFFD4D4D4);   // Placeholder text
   static const Color gray200 = Color(0xFFE5E5E5);   // Hairline borders (light mode)
@@ -312,7 +313,7 @@ class RiyoTheme {
           activeTrackColor: white,
           inactiveTrackColor: gray700,
           thumbColor: white,
-          overlayColor: white.withValues(alpha: 0.12),
+          overlayColor: white.withOpacity(0.12),
           valueIndicatorColor: white,
           valueIndicatorTextStyle: labelSmall.copyWith(color: black),
         ),
@@ -322,7 +323,7 @@ class RiyoTheme {
             return gray400;
           }),
           trackColor: WidgetStateProperty.resolveWith((states) {
-            if (states.contains(WidgetState.selected)) return white.withValues(alpha: 0.5);
+            if (states.contains(WidgetState.selected)) return white.withOpacity(0.5);
             return gray700;
           }),
           trackOutlineColor: WidgetStateProperty.all(Colors.transparent),
