@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'riyo_api.dart';
-import 'riyo_theme.dart';
-import 'state_widgets.dart';
+import '../riyo_api.dart';
+import '../riyo_theme.dart';
+import '../state_widgets.dart';
 
 /// Home feed screen — X-style chronological feed of school content
 class HomeFeedScreen extends StatefulWidget {

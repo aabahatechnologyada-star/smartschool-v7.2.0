@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'riyo_api.dart';
-import 'riyo_theme.dart';
-import 'state_widgets.dart';
+import '../riyo_api.dart';
+import '../riyo_theme.dart';
+import '../state_widgets.dart';
 
 /// Search/Discover screen — X-style explore with tabs
 class SearchScreen extends StatefulWidget {
@@ -329,7 +329,7 @@ class _PeopleTile extends StatelessWidget {
                     width: 14,
                     height: 14,
                     decoration: BoxDecoration(
-                      color: RiyoTheme.white,
+                      color: RiyoTheme.black,
                       shape: BoxShape.circle,
                       border: Border.all(color: RiyoTheme.black, width: 2),
                     ),

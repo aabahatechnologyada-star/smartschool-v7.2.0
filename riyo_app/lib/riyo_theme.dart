@@ -196,7 +196,7 @@ class RiyoTheme {
           errorStyle: bodySmall.copyWith(color: white),
           floatingLabelStyle: bodyMedium.copyWith(color: white),
         ),
-        cardTheme: CardThemeData(
+        cardTheme: CardTheme(
           color: gray900,
           surfaceTintColor: Colors.transparent,
           elevation: 0,
@@ -237,7 +237,7 @@ class RiyoTheme {
           side: const BorderSide(color: gray700, width: 0.5),
           brightness: Brightness.dark,
         ),
-        dialogTheme: DialogThemeData(
+        dialogTheme: DialogTheme(
           backgroundColor: gray900,
           surfaceTintColor: Colors.transparent,
           elevation: 8,
@@ -291,7 +291,7 @@ class RiyoTheme {
           padding: const EdgeInsets.symmetric(horizontal: space3, vertical: space2),
           preferBelow: true,
         ),
-        snackbarTheme: SnackBarThemeData(
+        snackBarTheme: SnackBarThemeData(
           backgroundColor: gray800,
           contentTextStyle: bodyMedium,
           actionTextColor: white,
@@ -299,7 +299,7 @@ class RiyoTheme {
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(radiusMd)),
           elevation: 4,
         ),
-        tabBarTheme: TabBarThemeData(
+        tabBarTheme: TabBarTheme(
           labelColor: white,
           unselectedLabelColor: gray600,
           indicatorColor: white,
@@ -496,7 +496,7 @@ class RiyoTheme {
           errorStyle: bodySmall.copyWith(color: black),
           floatingLabelStyle: bodyMedium.copyWith(color: black),
         ),
-        cardTheme: CardThemeData(
+        cardTheme: CardTheme(
           color: white,
           surfaceTintColor: Colors.transparent,
           elevation: 0,
@@ -527,7 +527,7 @@ class RiyoTheme {
           side: const BorderSide(color: gray300, width: 0.5),
           brightness: Brightness.light,
         ),
-        dialogTheme: DialogThemeData(
+        dialogTheme: DialogTheme(
           backgroundColor: white,
           surfaceTintColor: Colors.transparent,
           elevation: 8,
@@ -548,7 +548,7 @@ class RiyoTheme {
           ),
           modalBackgroundColor: white,
         ),
-        tabBarTheme: TabBarThemeData(
+        tabBarTheme: TabBarTheme(
           labelColor: black,
           unselectedLabelColor: gray600,
           indicatorColor: black,

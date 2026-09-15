@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'riyo_api.dart';
-import 'riyo_theme.dart';
-import 'state_widgets.dart';
+import '../riyo_api.dart';
+import '../riyo_theme.dart';
+import '../state_widgets.dart';
 
 /// Profile screen — X-style profile with tabs
 class ProfileScreen extends StatefulWidget {
