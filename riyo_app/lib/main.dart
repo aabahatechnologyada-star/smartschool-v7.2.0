@@ -3,6 +3,11 @@ import 'riyo_api.dart';
 import 'api_config.dart';
 import 'riyo_theme.dart';
 import 'state_widgets.dart';
+import 'screens/home_feed_screen.dart';
+import 'screens/search_screen.dart';
+import 'screens/notifications_screen.dart';
+import 'screens/messages_screen.dart';
+import 'screens/profile_screen.dart';
 
 // Single shared API client. The 401 handler is set after MaterialApp is built
 // so the navigator is available to pop to the login screen when the token expires.
