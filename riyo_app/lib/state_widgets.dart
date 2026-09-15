@@ -189,7 +189,7 @@ class EmptyView extends StatelessWidget {
   final VoidCallback? onAction;
   final String? actionLabel;
 
-  const EmptyView({
+  EmptyView({
     super.key,
     required this.icon,
     required this.title,
@@ -226,7 +226,7 @@ class EmptyView extends StatelessWidget {
 class ErrorView extends StatelessWidget {
   final Object error;
   final VoidCallback? onRetry;
-  const ErrorView({super.key, required this.error, this.onRetry});
+  ErrorView({super.key, required this.error, this.onRetry});
 
   @override
   Widget build(BuildContext context) => Center(
@@ -283,19 +283,8 @@ class ErrorView extends StatelessWidget {
 /// Convenience: a single widget that switches between loading / error / empty /
 /// real content based on the supplied [AsyncSnapshot]-like state.
 class StateBody<T> extends StatelessWidget {
-  final bool loading;
-  final Object? error;
-  final T? data;
-  final bool Function(T data) isEmpty;
-  final Widget Function(T data) builder;
-  final String? emptyTitle;
-  final String? emptyMessage;
-  final IconData emptyIcon;
-  final VoidCallback? onRetry;
-  final Widget? skeleton;
-
   StateBody({
-    super.key,
+    Key? key,
     required this.loading,
     required this.error,
     required this.data,
@@ -306,7 +295,18 @@ class StateBody<T> extends StatelessWidget {
     this.emptyMessage,
     this.emptyIcon = Icons.inbox_outlined,
     this.skeleton,
-  });
+  }) : super(key: key);
+
+  final bool loading;
+  final Object? error;
+  final T? data;
+  final bool Function(T data) isEmpty;
+  final Widget Function(T data) builder;
+  final String? emptyTitle;
+  final String? emptyMessage;
+  final IconData emptyIcon;
+  final VoidCallback? onRetry;
+  final Widget? skeleton;
 
   @override
   Widget build(BuildContext context) {
