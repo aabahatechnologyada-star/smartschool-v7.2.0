@@ -191,7 +191,7 @@ class EmptyView extends StatelessWidget {
 
   const EmptyView({
     super.key,
-    this.icon = Icons.inbox_outlined,
+    required this.icon,
     required this.title,
     this.message,
     this.onAction,
@@ -294,7 +294,7 @@ class StateBody<T> extends StatelessWidget {
   final VoidCallback? onRetry;
   final Widget? skeleton;
 
-  const StateBody({
+  StateBody({
     super.key,
     required this.loading,
     required this.error,
