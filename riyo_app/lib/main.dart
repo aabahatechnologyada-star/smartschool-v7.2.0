@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'riyo_api.dart';
-import 'api_config.dart';
-import 'riyo_theme.dart';
-import 'state_widgets.dart';
-import 'screens/home_feed_screen.dart';
-import 'screens/search_screen.dart';
-import 'screens/notifications_screen.dart';
-import 'screens/messages_screen.dart';
-import 'screens/profile_screen.dart';
+import 'package:riyo_app/riyo_api.dart';
+import 'package:riyo_app/api_config.dart';
+import 'package:riyo_app/riyo_theme.dart';
+import 'package:riyo_app/state_widgets.dart';
+import 'package:riyo_app/screens/home_feed_screen.dart';
+import 'package:riyo_app/screens/search_screen.dart';
+import 'package:riyo_app/screens/notifications_screen.dart';
+import 'package:riyo_app/screens/messages_screen.dart';
+import 'package:riyo_app/screens/profile_screen.dart';
 
 // Single shared API client. The 401 handler is set after MaterialApp is built
 // so the navigator is available to pop to the login screen when the token expires.
