@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../riyo_api.dart';
-import '../riyo_theme.dart';
-import '../state_widgets.dart';
+import 'package:riyo_app/riyo_api.dart';
+import 'package:riyo_app/riyo_theme.dart';
+import 'package:riyo_app/state_widgets.dart';
 
 /// Notifications screen — X-style notification timeline
 class NotificationsScreen extends StatefulWidget {
@@ -35,7 +35,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
     if (refresh) setState(() => _loading = true);
     try {
       // Fetch notices from API as notifications
-      final noticesRes = await api.notices();
+      final noticesRes = await RiyoApi.instance.notices();
       final notices = (noticesRes['notices'] as List?) ?? [];
 
       final items = notices.map<Map<String, dynamic>>((notice) => {

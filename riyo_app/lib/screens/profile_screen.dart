@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../riyo_api.dart';
-import '../riyo_theme.dart';
-import '../state_widgets.dart';
+import 'package:riyo_app/riyo_api.dart';
+import 'package:riyo_app/riyo_theme.dart';
+import 'package:riyo_app/state_widgets.dart';
 
 /// Profile screen — X-style profile with tabs
 class ProfileScreen extends StatefulWidget {
@@ -33,7 +33,7 @@ class _ProfileScreenState extends State<ProfileScreen>
   Future<void> _loadProfile({bool refresh = false}) async {
     if (refresh) setState(() => _loading = true);
     try {
-      final res = await api.profile();
+      final res = await RiyoApi.instance.profile();
       if (mounted) {
         setState(() {
           _profile = res['student'] as Map<String, dynamic>?;
@@ -232,6 +232,12 @@ class _ProfileView extends StatelessWidget {
   }
 
   Widget _buildPostsTab() {
+    final name = '${student['firstname'] ?? ''} ${student['lastname'] ?? ''}'.trim();
+    final admissionNo = student['admission_no'] ?? '';
+    final className = student['class'] ?? '';
+    final section = student['section'] ?? '';
+    final gender = student['gender'] ?? '';
+    
     return ListView(
       padding: const EdgeInsets.only(top: RiyoTheme.space2, bottom: RiyoTheme.space8),
       children: [

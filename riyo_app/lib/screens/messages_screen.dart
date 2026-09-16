@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../riyo_api.dart';
-import '../riyo_theme.dart';
-import '../state_widgets.dart';
+import 'package:riyo_app/riyo_api.dart';
+import 'package:riyo_app/riyo_theme.dart';
+import 'package:riyo_app/state_widgets.dart';
 
 /// Messages/Chat screen — X-style DM list
 class MessagesScreen extends StatefulWidget {
