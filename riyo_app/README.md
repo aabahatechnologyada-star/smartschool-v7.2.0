@@ -34,3 +34,4 @@ Flutter app (Android + iOS) for Riyo school. Talks to the JSON API in
 Free InfinityFree hosts inject a one-time JS challenge cookie. In the app,
 load the site root once (store cookies) before calling the API, or host the
 API on a plan without the challenge. The token itself is valid 24h.
+# Trigger rebuild Wed Sep 16 03:50:43 UTC 2026
