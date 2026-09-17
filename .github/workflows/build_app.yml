@@ -75,9 +75,9 @@ jobs:
         if: success()
         run: |
           echo "=== build/app/outputs/flutter-apk ==="
-          find build/app/outputs/flutter-apk -type f 2>/dev/null
+          find build/app/outputs/flutter-apk -type f 2>/dev/null || echo "No files found"
           echo "=== build/app/outputs ==="
-          find build/app/outputs -type f -name "*.apk" 2>/dev/null
+          find build/app/outputs -type f -name "*.apk" 2>/dev/null || echo "No files found"
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
