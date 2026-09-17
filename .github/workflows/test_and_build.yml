@@ -1,0 +1,262 @@
+name: Test & Build
+
+on:
+  push:
+    branches: [main, riyo-mobile-app]
+    paths:
+      - 'riyo_app/**'
+      - '.github/workflows/**'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'riyo_app/**'
+  workflow_dispatch:
+
+jobs:
+  # Run tests
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: riyo_app
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.22.x'
+          channel: 'stable'
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Generate mocks
+        run: dart run build_runner build --delete-conflicting-outputs
+
+      - name: Run unit tests
+        run: flutter test test/ --coverage
+
+      - name: Upload coverage
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./coverage/lcov.info
+
+  # Android APK
+  build-android:
+    name: Build Android APK
+    needs: test
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: riyo_app
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.22.x'
+          channel: 'stable'
+          cache: true
+
+      - name: Flutter version
+        run: flutter --version
+
+      - name: Stash app sources
+        run: |
+          mv lib /tmp/_lib && mv assets /tmp/_assets && mv pubspec.yaml /tmp/_pubspec.yaml || true
+
+      - name: Generate Android project
+        run: flutter create --platforms=android --org=com.riyo --project-name=riyo_app .
+
+      - name: Restore app sources
+        run: |
+          rm -rf lib && mv /tmp/_lib ./lib
+          rm -rf assets && mv /tmp/_assets ./assets
+          rm -f pubspec.yaml && mv /tmp/_pubspec.yaml ./pubspec.yaml
+
+      - name: Remove generated test/ and README.md
+        run: |
+          rm -rf test README.md || true
+
+      - name: Patch Android permissions
+        run: python3 tool/patch_perms.py android
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Analyze
+        run: flutter analyze
+
+      - name: Build APK (release)
+        run: |
+          mkdir -p build
+          flutter build apk --release --verbose 2>&1 | tee build/android-build.log
+
+      - name: List APK outputs (debug)
+        if: success()
+        run: |
+          echo "=== build/app/outputs/flutter-apk ==="
+          find build/app/outputs/flutter-apk -type f 2>/dev/null || echo "No files found"
+          echo "=== build/app/outputs ==="
+          find build/app/outputs -type f -name "*.apk" 2>/dev/null || echo "No files found"
+          echo "=== ALL .apk files in build ==="
+          find build -type f -name "*.apk" 2>/dev/null || echo "No files found"
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: riyo-app-release-apk
+          path: |
+            build/app/outputs/flutter-apk/*.apk
+            build/app/outputs/flutter-apk/**/*.apk
+            build/app/outputs/**/*.apk
+          if-no-files-found: error
+
+      - name: Upload build logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-build-logs
+          path: |
+            build/**/*.log
+            android/**/*.log
+            .dart_tool/**/*.log
+
+  # iOS
+  build-ios:
+    name: Build iOS (unsigned)
+    needs: test
+    runs-on: macos-latest
+    defaults:
+      run:
+        working-directory: riyo_app
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.22.x'
+          channel: 'stable'
+          cache: true
+
+      - name: Flutter version
+        run: flutter --version
+
+      - name: Setup CocoaPods
+        run: sudo gem install cocoapods --no-document || pod --version
+
+      - name: Stash app sources
+        run: |
+          mv lib /tmp/_lib && mv assets /tmp/_assets && mv pubspec.yaml /tmp/_pubspec.yaml || true
+
+      - name: Generate iOS project
+        run: flutter create --platforms=ios --org=com.riyo --project-name=riyo_app .
+
+      - name: Restore app sources
+        run: |
+          rm -rf lib && mv /tmp/_lib ./lib
+          rm -rf assets && mv /tmp/_assets ./assets
+          rm -f pubspec.yaml && mv /tmp/_pubspec.yaml ./pubspec.yaml
+
+      - name: Remove generated test/ and README.md
+        run: rm -rf test README.md || true
+
+      - name: Patch iOS Info.plist
+        run: python3 tool/patch_perms.py ios
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Install iOS pods
+        run: cd ios && pod install && cd ..
+
+      - name: Build iOS (release, no codesign)
+        run: |
+          mkdir -p build
+          flutter build ios --release --no-codesign --verbose 2>&1 | tee build/ios-build.log
+
+      - name: List iOS outputs (debug)
+        if: success()
+        run: |
+          echo "=== build/ios ==="
+          find build/ios -type f -name "*.app" 2>/dev/null
+
+      - name: Upload iOS artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: riyo-app-release-ios
+          path: build/ios/iphoneos/Runner.app
+          if-no-files-found: warn
+
+      - name: Upload build logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-build-logs
+          path: |
+            build/**/*.log
+            ios/**/*.log
+            .dart_tool/**/*.log
+
+  # Integration tests (optional - requires emulator)
+  integration-test:
+    name: Integration Tests
+    needs: test
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: riyo_app
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.22.x'
+          channel: 'stable'
+          cache: true
+
+      - name: Start mock backend
+        run: |
+          dart run test/mock_backend.dart &
+          sleep 3
+          curl -s http://localhost:8080/riyo_api/setup
+
+      - name: Update API config for testing
+        run: |
+          sed -i 's|https://riyo.rf.gd|http://10.0.2.2:8080|' lib/api_config.dart
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Create AVD
+        uses: android-actions/create-avd@v2
+        with:
+          api-level: 33
+          arch: x86_64
+          ndk: false
+          emulator-options: -no-window -no-audio -no-boot-anim -gpu swiftshader_indirect
+
+      - name: Start emulator
+        run: |
+          emulator -avd test -no-window -no-audio -no-boot-anim -gpu swiftshader_indirect &
+          sleep 30
+          adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed) ]]; do sleep 1; done'
+
+      - name: Run integration tests
+        run: |
+          flutter test integration_test/app_test.dart -d emulator-5554
+        timeout-minutes: 10
+
+      - name: Upload test screenshots on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: integration-test-screenshots
+          path: |
+            integration_test/**/*.png
