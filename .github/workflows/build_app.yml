@@ -71,15 +71,20 @@ jobs:
           mkdir -p build
           flutter build apk --release --verbose 2>&1 | tee build/android-build.log
 
-      - name: List build directory (debug)
-        if: failure()
+      - name: List APK outputs (debug)
+        if: success()
         run: |
-          echo "=== build ==="
-          find build -type f -name "*.log" 2>/dev/null | head -20
-          echo "=== android ==="
-          find android -type f -name "*.log" 2>/dev/null | head -20
-          echo "=== .dart_tool ==="
-          find .dart_tool -type f -name "*.log" 2>/dev/null | head -20
+          echo "=== build/app/outputs/flutter-apk ==="
+          find build/app/outputs/flutter-apk -type f 2>/dev/null
+          echo "=== build/app/outputs ==="
+          find build/app/outputs -type f -name "*.apk" 2>/dev/null
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: riyo-app-release-apk
+          path: build/app/outputs/flutter-apk/*.apk
+          if-no-files-found: error
 
       - name: Upload build logs on failure
         if: failure()
@@ -90,13 +95,6 @@ jobs:
             build/**/*.log
             android/**/*.log
             .dart_tool/**/*.log
-
-      - name: Upload APK artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: riyo-app-release-apk
-          path: build/app/outputs/flutter-apk/*.apk
-          if-no-files-found: error
 
   # iOS — requires macOS + Xcode. Builds the unsigned .app (no-codesign).
   build-ios:
@@ -151,15 +149,18 @@ jobs:
           mkdir -p build
           flutter build ios --release --no-codesign --verbose 2>&1 | tee build/ios-build.log
 
-      - name: List build directory (debug)
-        if: failure()
+      - name: List iOS outputs (debug)
+        if: success()
         run: |
-          echo "=== build ==="
-          find build -type f -name "*.log" 2>/dev/null | head -20
-          echo "=== ios ==="
-          find ios -type f -name "*.log" 2>/dev/null | head -20
-          echo "=== .dart_tool ==="
-          find .dart_tool -type f -name "*.log" 2>/dev/null | head -20
+          echo "=== build/ios ==="
+          find build/ios -type f -name "*.app" 2>/dev/null
+
+      - name: Upload iOS artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: riyo-app-release-ios
+          path: build/ios/iphoneos/Runner.app
+          if-no-files-found: warn
 
       - name: Upload build logs on failure
         if: failure()
@@ -170,10 +171,3 @@ jobs:
             build/**/*.log
             ios/**/*.log
             .dart_tool/**/*.log
-
-      - name: Upload iOS artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: riyo-app-release-ios
-          path: build/ios/iphoneos/Runner.app
-          if-no-files-found: warn
