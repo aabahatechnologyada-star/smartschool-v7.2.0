@@ -10,7 +10,8 @@ class SearchScreen extends StatefulWidget {
   State<SearchScreen> createState() => _SearchScreenState();
 }
 
-class _SearchScreenState extends State<SearchScreen> with SingleTickerProviderStateMixin {
+class _SearchScreenState extends State<SearchScreen>
+    with SingleTickerProviderStateMixin {
   late final TabController _tabController;
   final _searchController = TextEditingController();
   String _query = '';
@@ -39,7 +40,12 @@ class _SearchScreenState extends State<SearchScreen> with SingleTickerProviderSt
       // Mock results for now
       setState(() {
         _results = [
-          {'type': 'student', 'name': 'John Doe', 'class': '10-A', 'admission': 'STU001'},
+          {
+            'type': 'student',
+            'name': 'John Doe',
+            'class': '10-A',
+            'admission': 'STU001',
+          },
           {'type': 'notice', 'title': 'Exam Schedule', 'date': '2024-01-15'},
           {'type': 'homework', 'subject': 'Mathematics', 'due': '2024-01-20'},
         ];
@@ -61,17 +67,29 @@ class _SearchScreenState extends State<SearchScreen> with SingleTickerProviderSt
             children: [
               Padding(
                 padding: const EdgeInsets.fromLTRB(
-                  RiyoTheme.space4, 0, RiyoTheme.space4, RiyoTheme.space3),
+                  RiyoTheme.space4,
+                  0,
+                  RiyoTheme.space4,
+                  RiyoTheme.space3,
+                ),
                 child: TextField(
                   controller: _searchController,
                   style: RiyoTheme.bodyLarge,
                   decoration: InputDecoration(
                     hintText: 'Search students, notices, homework...',
-                    hintStyle: RiyoTheme.bodyMedium.copyWith(color: RiyoTheme.gray500),
-                    prefixIcon: const Icon(Icons.search_rounded, color: RiyoTheme.gray500),
+                    hintStyle: RiyoTheme.bodyMedium.copyWith(
+                      color: RiyoTheme.gray500,
+                    ),
+                    prefixIcon: const Icon(
+                      Icons.search_rounded,
+                      color: RiyoTheme.gray500,
+                    ),
                     suffixIcon: _query.isNotEmpty
                         ? IconButton(
-                            icon: const Icon(Icons.clear_rounded, color: RiyoTheme.gray500),
+                            icon: const Icon(
+                              Icons.clear_rounded,
+                              color: RiyoTheme.gray500,
+                            ),
                             onPressed: () {
                               _searchController.clear();
                               setState(() {
@@ -199,11 +217,15 @@ class _SearchScreenState extends State<SearchScreen> with SingleTickerProviderSt
       children: [
         Text('Classmates', style: RiyoTheme.headlineMedium),
         const SizedBox(height: RiyoTheme.space4),
-        ...List.generate(5, (index) => _PeopleTile(
-          name: 'Student ${index + 1}',
-          className: 'Class ${10 + (index % 3)} - ${['A', 'B', 'C'][index % 3]}',
-          isOnline: index % 2 == 0,
-        )),
+        ...List.generate(
+          5,
+          (index) => _PeopleTile(
+            name: 'Student ${index + 1}',
+            className:
+                'Class ${10 + (index % 3)} - ${['A', 'B', 'C'][index % 3]}',
+            isOnline: index % 2 == 0,
+          ),
+        ),
       ],
     );
   }
@@ -252,7 +274,12 @@ class _ExploreCard extends StatelessWidget {
                 children: [
                   Text(title, style: RiyoTheme.titleMedium),
                   const SizedBox(height: RiyoTheme.space1),
-                  Text(subtitle, style: RiyoTheme.bodyMedium.copyWith(color: RiyoTheme.gray400)),
+                  Text(
+                    subtitle,
+                    style: RiyoTheme.bodyMedium.copyWith(
+                      color: RiyoTheme.gray400,
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -298,12 +325,18 @@ class _SearchResultTile extends StatelessWidget {
           backgroundColor: RiyoTheme.gray800,
           child: Icon(icon, color: RiyoTheme.white),
         ),
-        title: Text(item['name'] ?? item['title'] ?? '', style: RiyoTheme.titleMedium),
+        title: Text(
+          item['name'] ?? item['title'] ?? '',
+          style: RiyoTheme.titleMedium,
+        ),
         subtitle: Text(
           item['class'] ?? item['subject'] ?? item['date'] ?? '',
           style: RiyoTheme.bodyMedium.copyWith(color: RiyoTheme.gray400),
         ),
-        trailing: const Icon(Icons.chevron_right_rounded, color: RiyoTheme.gray500),
+        trailing: const Icon(
+          Icons.chevron_right_rounded,
+          color: RiyoTheme.gray500,
+        ),
         onTap: () {},
       ),
     );
@@ -334,7 +367,9 @@ class _PeopleTile extends StatelessWidget {
                 backgroundColor: RiyoTheme.gray800,
                 child: Text(
                   name[0],
-                  style: RiyoTheme.titleMedium.copyWith(fontWeight: FontWeight.w700),
+                  style: RiyoTheme.titleMedium.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
               ),
               if (isOnline)
@@ -366,14 +401,16 @@ class _PeopleTile extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(name, style: RiyoTheme.titleMedium),
-                Text(className, style: RiyoTheme.labelMedium.copyWith(color: RiyoTheme.gray400)),
+                Text(
+                  className,
+                  style: RiyoTheme.labelMedium.copyWith(
+                    color: RiyoTheme.gray400,
+                  ),
+                ),
               ],
             ),
           ),
-          OutlinedButton(
-            onPressed: () {},
-            child: const Text('Follow'),
-          ),
+          OutlinedButton(onPressed: () {}, child: const Text('Follow')),
         ],
       ),
     );

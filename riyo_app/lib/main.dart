@@ -45,14 +45,14 @@ class _RiyoAppState extends State<RiyoApp> {
 
   @override
   Widget build(BuildContext context) => MaterialApp(
-        title: 'Riyo',
-        theme: RiyoTheme.dark,
-        darkTheme: RiyoTheme.dark,
-        themeMode: ThemeMode.dark,
-        navigatorKey: _navKey,
-        home: const _RootGate(),
-        debugShowCheckedModeBanner: false,
-      );
+    title: 'Riyo',
+    theme: RiyoTheme.dark,
+    darkTheme: RiyoTheme.dark,
+    themeMode: ThemeMode.dark,
+    navigatorKey: _navKey,
+    home: const _RootGate(),
+    debugShowCheckedModeBanner: false,
+  );
 }
 
 /// Decides whether to show login or the main app, based on a stored token.
@@ -104,7 +104,9 @@ class _LoginScreenState extends State<LoginScreen> {
       if (!mounted) return;
       if (res['status'] == 'success') {
         Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (_) => const MainApp()));
+          context,
+          MaterialPageRoute(builder: (_) => const MainApp()),
+        );
       } else {
         setState(() => _err = 'Unexpected response from the server.');
       }
@@ -117,105 +119,120 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        body: Container(
-          decoration: const BoxDecoration(color: RiyoTheme.black),
-          child: Center(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(RiyoTheme.space6),
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 400),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    // Logo
-                    Image.asset('assets/riyo_logo.png', height: 72),
-                    const SizedBox(height: RiyoTheme.space4),
-                    // Title
-                    Text('Welcome back',
-                        style: RiyoTheme.displayMedium.copyWith(
-                            fontWeight: FontWeight.w800)),
-                    const SizedBox(height: RiyoTheme.space2),
-                    Text('Sign in to your student account',
-                        style: RiyoTheme.bodyMedium.copyWith(
-                            color: RiyoTheme.gray400)),
-                    const SizedBox(height: RiyoTheme.space6),
-                    // Form card
-                    Container(
-                      decoration: BoxDecoration(
-                        color: RiyoTheme.gray900,
-                        borderRadius:
-                            BorderRadius.circular(RiyoTheme.radiusXl),
-                        border: Border.all(
-                            color: RiyoTheme.gray700, width: 0.5),
-                      ),
-                      padding: const EdgeInsets.all(RiyoTheme.space6),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          TextField(
-                            controller: _user,
-                            enabled: !_busy,
-                            style: RiyoTheme.bodyLarge,
-                            decoration: InputDecoration(
-                              labelText: 'Admission No / Username',
-                              prefixIcon: const Icon(Icons.person_outline_rounded),
-                              labelStyle: RiyoTheme.bodyMedium
-                                  .copyWith(color: RiyoTheme.gray400),
-                            ),
-                          ),
-                          const SizedBox(height: RiyoTheme.space4),
-                          TextField(
-                            controller: _pass,
-                            enabled: !_busy,
-                            obscureText: true,
-                            style: RiyoTheme.bodyLarge,
-                            decoration: InputDecoration(
-                              labelText: 'Password',
-                              prefixIcon: const Icon(Icons.lock_outline_rounded),
-                              labelStyle: RiyoTheme.bodyMedium
-                                  .copyWith(color: RiyoTheme.gray400),
-                            ),
-                          ),
-                          const SizedBox(height: RiyoTheme.space4),
-                          if (_err != null)
-                            Padding(
-                              padding:
-                                  const EdgeInsets.only(bottom: RiyoTheme.space3),
-                              child: Text(_err!,
-                                  style: RiyoTheme.bodyMedium
-                                      .copyWith(color: RiyoTheme.white),
-                                  textAlign: TextAlign.center),
-                            ),
-                          SizedBox(
-                            width: double.infinity,
-                            child: ElevatedButton(
-                              onPressed: _busy ? null : _login,
-                              child: _busy
-                                  ? const SizedBox(
-                                      height: 22,
-                                      width: 22,
-                                      child: CircularProgressIndicator(
-                                          strokeWidth: 2.5,
-                                          valueColor:
-                                              AlwaysStoppedAnimation(RiyoTheme.black)),
-                                    )
-                                  : const Text('Sign in'),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: RiyoTheme.space5),
-                    Text('Riyo v7.2.0',
-                        style: RiyoTheme.labelSmall
-                            .copyWith(color: RiyoTheme.gray600)),
-                  ],
+    body: Container(
+      decoration: const BoxDecoration(color: RiyoTheme.black),
+      child: Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(RiyoTheme.space6),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 400),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Logo
+                Image.asset('assets/riyo_logo.png', height: 72),
+                const SizedBox(height: RiyoTheme.space4),
+                // Title
+                Text(
+                  'Welcome back',
+                  style: RiyoTheme.displayMedium.copyWith(
+                    fontWeight: FontWeight.w800,
+                  ),
                 ),
-              ),
+                const SizedBox(height: RiyoTheme.space2),
+                Text(
+                  'Sign in to your student account',
+                  style: RiyoTheme.bodyMedium.copyWith(
+                    color: RiyoTheme.gray400,
+                  ),
+                ),
+                const SizedBox(height: RiyoTheme.space6),
+                // Form card
+                Container(
+                  decoration: BoxDecoration(
+                    color: RiyoTheme.gray900,
+                    borderRadius: BorderRadius.circular(RiyoTheme.radiusXl),
+                    border: Border.all(color: RiyoTheme.gray700, width: 0.5),
+                  ),
+                  padding: const EdgeInsets.all(RiyoTheme.space6),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      TextField(
+                        controller: _user,
+                        enabled: !_busy,
+                        style: RiyoTheme.bodyLarge,
+                        decoration: InputDecoration(
+                          labelText: 'Admission No / Username',
+                          prefixIcon: const Icon(Icons.person_outline_rounded),
+                          labelStyle: RiyoTheme.bodyMedium.copyWith(
+                            color: RiyoTheme.gray400,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: RiyoTheme.space4),
+                      TextField(
+                        controller: _pass,
+                        enabled: !_busy,
+                        obscureText: true,
+                        style: RiyoTheme.bodyLarge,
+                        decoration: InputDecoration(
+                          labelText: 'Password',
+                          prefixIcon: const Icon(Icons.lock_outline_rounded),
+                          labelStyle: RiyoTheme.bodyMedium.copyWith(
+                            color: RiyoTheme.gray400,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: RiyoTheme.space4),
+                      if (_err != null)
+                        Padding(
+                          padding: const EdgeInsets.only(
+                            bottom: RiyoTheme.space3,
+                          ),
+                          child: Text(
+                            _err!,
+                            style: RiyoTheme.bodyMedium.copyWith(
+                              color: RiyoTheme.white,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: _busy ? null : _login,
+                          child: _busy
+                              ? const SizedBox(
+                                  height: 22,
+                                  width: 22,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2.5,
+                                    valueColor: AlwaysStoppedAnimation(
+                                      RiyoTheme.black,
+                                    ),
+                                  ),
+                                )
+                              : const Text('Sign in'),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: RiyoTheme.space5),
+                Text(
+                  'Riyo v7.2.0',
+                  style: RiyoTheme.labelSmall.copyWith(
+                    color: RiyoTheme.gray600,
+                  ),
+                ),
+              ],
             ),
           ),
         ),
-      );
+      ),
+    ),
+  );
 }
 
 /// Main app with bottom navigation bar (5 tabs like X)
@@ -255,9 +272,11 @@ class _MainAppState extends State<MainApp> with TickerProviderStateMixin {
       // Could add scroll controller logic here
     }
     setState(() => _currentIndex = index);
-    _pageController.animateToPage(index,
-        duration: const Duration(milliseconds: 250),
-        curve: Curves.easeOutCubic);
+    _pageController.animateToPage(
+      index,
+      duration: const Duration(milliseconds: 250),
+      curve: Curves.easeOutCubic,
+    );
   }
 
   @override

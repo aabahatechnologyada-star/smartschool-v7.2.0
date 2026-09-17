@@ -32,17 +32,17 @@ class ApiException implements Exception {
 
 enum ApiError {
   // network / connectivity
-  noNetwork,        // SocketException, no internet
-  timeout,          // request timed out
+  noNetwork, // SocketException, no internet
+  timeout, // request timed out
   // auth
-  unauthorized,     // 401 — token missing/expired
-  forbidden,        // 403 — e.g. teacher tried to use student app
-  notFound,         // 404
+  unauthorized, // 401 — token missing/expired
+  forbidden, // 403 — e.g. teacher tried to use student app
+  notFound, // 404
   // server
-  serverError,      // 5xx
-  badRequest,       // 400 with a message
+  serverError, // 5xx
+  badRequest, // 400 with a message
   // parsing
-  invalidResponse,  // non-JSON body (e.g. InfinityFree JS challenge HTML)
+  invalidResponse, // non-JSON body (e.g. InfinityFree JS challenge HTML)
   // unknown
   unknown,
 }
@@ -58,9 +58,13 @@ String friendlyError(Object e) {
       case ApiError.unauthorized:
         return 'Your session has expired. Please log in again.';
       case ApiError.forbidden:
-        return e.message.isNotEmpty ? e.message : 'You are not allowed to do that.';
+        return e.message.isNotEmpty
+            ? e.message
+            : 'You are not allowed to do that.';
       case ApiError.notFound:
-        return e.message.isNotEmpty ? e.message : 'The requested information was not found.';
+        return e.message.isNotEmpty
+            ? e.message
+            : 'The requested information was not found.';
       case ApiError.badRequest:
         return e.message.isNotEmpty ? e.message : 'The request was invalid.';
       case ApiError.serverError:
@@ -68,7 +72,9 @@ String friendlyError(Object e) {
       case ApiError.invalidResponse:
         return 'The server response was not valid. Please try again in a moment.';
       case ApiError.unknown:
-        return e.message.isNotEmpty ? e.message : 'Something went wrong. Please try again.';
+        return e.message.isNotEmpty
+            ? e.message
+            : 'Something went wrong. Please try again.';
     }
   }
   return 'Something went wrong. Please try again.';

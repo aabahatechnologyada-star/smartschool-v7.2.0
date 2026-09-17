@@ -111,7 +111,10 @@ class _MessagesScreenState extends State<MessagesScreen> {
           emptyMessage: 'Start a conversation with teachers or classmates.',
           emptyIcon: Icons.chat_bubble_outline_rounded,
           builder: (conversations) => ListView.builder(
-            padding: const EdgeInsets.only(top: RiyoTheme.space2, bottom: RiyoTheme.space8),
+            padding: const EdgeInsets.only(
+              top: RiyoTheme.space2,
+              bottom: RiyoTheme.space8,
+            ),
             itemCount: conversations.length,
             itemBuilder: (context, index) =>
                 _ConversationTile(conversation: conversations[index]),
@@ -155,7 +158,9 @@ class _ConversationTile extends StatelessWidget {
                       backgroundColor: RiyoTheme.gray800,
                       child: Text(
                         conversation['name'][0],
-                        style: RiyoTheme.titleLarge.copyWith(fontWeight: FontWeight.w700),
+                        style: RiyoTheme.titleLarge.copyWith(
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
                     ),
                     if (online)
@@ -168,7 +173,10 @@ class _ConversationTile extends StatelessWidget {
                           decoration: BoxDecoration(
                             color: RiyoTheme.black,
                             shape: BoxShape.circle,
-                            border: Border.all(color: RiyoTheme.black, width: 2),
+                            border: Border.all(
+                              color: RiyoTheme.black,
+                              width: 2,
+                            ),
                           ),
                           child: Container(
                             margin: const EdgeInsets.all(2),
@@ -192,7 +200,9 @@ class _ConversationTile extends StatelessWidget {
                             child: Text(
                               conversation['name'] as String,
                               style: RiyoTheme.titleMedium.copyWith(
-                                fontWeight: unread > 0 ? FontWeight.w700 : FontWeight.w500,
+                                fontWeight: unread > 0
+                                    ? FontWeight.w700
+                                    : FontWeight.w500,
                               ),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
@@ -201,8 +211,12 @@ class _ConversationTile extends StatelessWidget {
                           Text(
                             _formatTime(time),
                             style: RiyoTheme.labelSmall.copyWith(
-                              color: unread > 0 ? RiyoTheme.white : RiyoTheme.gray500,
-                              fontWeight: unread > 0 ? FontWeight.w600 : FontWeight.w400,
+                              color: unread > 0
+                                  ? RiyoTheme.white
+                                  : RiyoTheme.gray500,
+                              fontWeight: unread > 0
+                                  ? FontWeight.w600
+                                  : FontWeight.w400,
                             ),
                           ),
                         ],
@@ -212,15 +226,21 @@ class _ConversationTile extends StatelessWidget {
                         children: [
                           Text(
                             conversation['role'] as String,
-                            style: RiyoTheme.labelSmall.copyWith(color: RiyoTheme.gray500),
+                            style: RiyoTheme.labelSmall.copyWith(
+                              color: RiyoTheme.gray500,
+                            ),
                           ),
                           const SizedBox(width: RiyoTheme.space2),
                           Expanded(
                             child: Text(
                               conversation['lastMessage'] as String,
                               style: RiyoTheme.bodyMedium.copyWith(
-                                color: unread > 0 ? RiyoTheme.gray300 : RiyoTheme.gray400,
-                                fontWeight: unread > 0 ? FontWeight.w500 : FontWeight.w400,
+                                color: unread > 0
+                                    ? RiyoTheme.gray300
+                                    : RiyoTheme.gray400,
+                                fontWeight: unread > 0
+                                    ? FontWeight.w500
+                                    : FontWeight.w400,
                               ),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
@@ -297,17 +317,33 @@ class _ConversationTileSkeleton extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    SkeletonLoader(width: 100, height: 18, borderRadius: BorderRadius.circular(RiyoTheme.radiusFull)),
+                    SkeletonLoader(
+                      width: 100,
+                      height: 18,
+                      borderRadius: BorderRadius.circular(RiyoTheme.radiusFull),
+                    ),
                     const Spacer(),
-                    SkeletonLoader(width: 40, height: 12, borderRadius: BorderRadius.circular(RiyoTheme.radiusFull)),
+                    SkeletonLoader(
+                      width: 40,
+                      height: 12,
+                      borderRadius: BorderRadius.circular(RiyoTheme.radiusFull),
+                    ),
                   ],
                 ),
                 const SizedBox(height: RiyoTheme.space2),
                 Row(
                   children: [
-                    SkeletonLoader(width: 80, height: 12, borderRadius: BorderRadius.circular(RiyoTheme.radiusFull)),
+                    SkeletonLoader(
+                      width: 80,
+                      height: 12,
+                      borderRadius: BorderRadius.circular(RiyoTheme.radiusFull),
+                    ),
                     const SizedBox(width: RiyoTheme.space3),
-                    SkeletonLoader(width: 200, height: 14, borderRadius: BorderRadius.circular(RiyoTheme.radiusFull)),
+                    SkeletonLoader(
+                      width: 200,
+                      height: 14,
+                      borderRadius: BorderRadius.circular(RiyoTheme.radiusFull),
+                    ),
                   ],
                 ),
               ],

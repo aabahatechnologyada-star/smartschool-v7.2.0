@@ -38,15 +38,19 @@ class _NotificationsScreenState extends State<NotificationsScreen>
       final noticesRes = await RiyoApi.instance.notices();
       final notices = (noticesRes['notices'] as List?) ?? [];
 
-      final items = notices.map<Map<String, dynamic>>((notice) => {
-        'id': notice['title'],
-        'type': 'notice',
-        'title': notice['title'],
-        'content': notice['message'],
-        'date': notice['date'],
-        'read': false,
-        'icon': Icons.campaign_outlined,
-      }).toList();
+      final items = notices
+          .map<Map<String, dynamic>>(
+            (notice) => {
+              'id': notice['title'],
+              'type': 'notice',
+              'title': notice['title'],
+              'content': notice['message'],
+              'date': notice['date'],
+              'read': false,
+              'icon': Icons.campaign_outlined,
+            },
+          )
+          .toList();
 
       // Add some mock mentions/notifications for demo
       final mentions = [
@@ -55,7 +59,9 @@ class _NotificationsScreenState extends State<NotificationsScreen>
           'type': 'mention',
           'title': 'Class Teacher',
           'content': 'Homework assigned: "Chapter 5 Exercises" due tomorrow',
-          'date': DateTime.now().subtract(const Duration(hours: 2)).toIso8601String(),
+          'date': DateTime.now()
+              .subtract(const Duration(hours: 2))
+              .toIso8601String(),
           'read': false,
           'icon': Icons.assignment_outlined,
         },
@@ -64,7 +70,9 @@ class _NotificationsScreenState extends State<NotificationsScreen>
           'type': 'mention',
           'title': 'Exam Department',
           'content': 'Your exam result for "Mid Term" is published',
-          'date': DateTime.now().subtract(const Duration(days: 1)).toIso8601String(),
+          'date': DateTime.now()
+              .subtract(const Duration(days: 1))
+              .toIso8601String(),
           'read': true,
           'icon': Icons.assessment_outlined,
         },
@@ -149,7 +157,10 @@ class _NotificationsScreenState extends State<NotificationsScreen>
       );
     }
     return ListView.builder(
-      padding: const EdgeInsets.only(top: RiyoTheme.space2, bottom: RiyoTheme.space8),
+      padding: const EdgeInsets.only(
+        top: RiyoTheme.space2,
+        bottom: RiyoTheme.space8,
+      ),
       itemCount: notifications.length,
       itemBuilder: (context, index) =>
           _NotificationTile(notification: notifications[index]),
@@ -182,7 +193,9 @@ class _NotificationTile extends StatelessWidget {
         vertical: RiyoTheme.space1,
       ),
       decoration: BoxDecoration(
-        color: read ? Colors.transparent : RiyoTheme.gray900.withOpacity(0.5),
+        color: read
+            ? Colors.transparent
+            : RiyoTheme.gray900.withValues(alpha: 0.5),
         borderRadius: BorderRadius.circular(RiyoTheme.radiusMd),
         border: Border.all(
           color: read ? Colors.transparent : RiyoTheme.gray700,
@@ -221,7 +234,9 @@ class _NotificationTile extends StatelessWidget {
                             child: Text(
                               notification['title'] as String,
                               style: RiyoTheme.titleMedium.copyWith(
-                                fontWeight: read ? FontWeight.w500 : FontWeight.w700,
+                                fontWeight: read
+                                    ? FontWeight.w500
+                                    : FontWeight.w700,
                               ),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
@@ -250,7 +265,9 @@ class _NotificationTile extends StatelessWidget {
                       const SizedBox(height: RiyoTheme.space2),
                       Text(
                         _formatDate(dateStr),
-                        style: RiyoTheme.labelSmall.copyWith(color: RiyoTheme.gray500),
+                        style: RiyoTheme.labelSmall.copyWith(
+                          color: RiyoTheme.gray500,
+                        ),
                       ),
                     ],
                   ),
@@ -307,13 +324,29 @@ class _NotificationTileSkeleton extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SkeletonLoader(width: 120, height: 18, borderRadius: BorderRadius.circular(RiyoTheme.radiusFull)),
+                SkeletonLoader(
+                  width: 120,
+                  height: 18,
+                  borderRadius: BorderRadius.circular(RiyoTheme.radiusFull),
+                ),
                 const SizedBox(height: RiyoTheme.space2),
-                SkeletonLoader(width: double.infinity, height: 16, borderRadius: BorderRadius.circular(RiyoTheme.radiusFull)),
+                SkeletonLoader(
+                  width: double.infinity,
+                  height: 16,
+                  borderRadius: BorderRadius.circular(RiyoTheme.radiusFull),
+                ),
                 const SizedBox(height: RiyoTheme.space1),
-                SkeletonLoader(width: 160, height: 16, borderRadius: BorderRadius.circular(RiyoTheme.radiusFull)),
+                SkeletonLoader(
+                  width: 160,
+                  height: 16,
+                  borderRadius: BorderRadius.circular(RiyoTheme.radiusFull),
+                ),
                 const SizedBox(height: RiyoTheme.space2),
-                SkeletonLoader(width: 60, height: 12, borderRadius: BorderRadius.circular(RiyoTheme.radiusFull)),
+                SkeletonLoader(
+                  width: 60,
+                  height: 12,
+                  borderRadius: BorderRadius.circular(RiyoTheme.radiusFull),
+                ),
               ],
             ),
           ),

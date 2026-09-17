@@ -135,7 +135,10 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
           emptyIcon: Icons.article_outlined,
           builder: (items) => ListView.builder(
             controller: _scrollController,
-            padding: const EdgeInsets.only(top: RiyoTheme.space2, bottom: RiyoTheme.space8),
+            padding: const EdgeInsets.only(
+              top: RiyoTheme.space2,
+              bottom: RiyoTheme.space8,
+            ),
             itemCount: items.length,
             itemBuilder: (context, index) => _FeedCard(item: items[index]),
           ),
@@ -153,7 +156,7 @@ class _FeedCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final type = item['type'] as String;
-    
+
     return Container(
       margin: const EdgeInsets.symmetric(
         horizontal: RiyoTheme.space4,
@@ -195,7 +198,9 @@ class _FeedCard extends StatelessWidget {
                       if (item['subtitle'] != null)
                         Text(
                           item['subtitle'] as String,
-                          style: RiyoTheme.labelMedium.copyWith(color: RiyoTheme.gray400),
+                          style: RiyoTheme.labelMedium.copyWith(
+                            color: RiyoTheme.gray400,
+                          ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -205,21 +210,23 @@ class _FeedCard extends StatelessWidget {
                 if (item['date'] != null)
                   Text(
                     _formatDate(item['date'] as String),
-                    style: RiyoTheme.labelSmall.copyWith(color: RiyoTheme.gray500),
+                    style: RiyoTheme.labelSmall.copyWith(
+                      color: RiyoTheme.gray500,
+                    ),
                   ),
               ],
             ),
           ),
-          
+
           // Content
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: RiyoTheme.space4),
             child: _buildContent(type),
           ),
-          
+
           // Divider
           const Divider(height: 1, indent: 56, endIndent: 0),
-          
+
           // Action bar
           _ActionBar(item: item),
         ],
@@ -232,10 +239,7 @@ class _FeedCard extends StatelessWidget {
       case 'notice':
         return Padding(
           padding: const EdgeInsets.only(bottom: RiyoTheme.space3),
-          child: Text(
-            item['content'] as String,
-            style: RiyoTheme.bodyLarge,
-          ),
+          child: Text(item['content'] as String, style: RiyoTheme.bodyLarge),
         );
       case 'exam_result':
         return Column(
@@ -309,7 +313,9 @@ class _FeedCard extends StatelessWidget {
                   padding: const EdgeInsets.only(top: RiyoTheme.space2),
                   child: Text(
                     '+ ${(item['subjects'] as List).length - 4} more subjects',
-                    style: RiyoTheme.labelSmall.copyWith(color: RiyoTheme.gray400),
+                    style: RiyoTheme.labelSmall.copyWith(
+                      color: RiyoTheme.gray400,
+                    ),
                   ),
                 ),
             ],
@@ -410,7 +416,12 @@ class _ActionButton extends StatelessWidget {
                 children: [
                   Icon(icon, color: RiyoTheme.gray400, size: 20),
                   const SizedBox(width: RiyoTheme.space1),
-                  Text(label, style: RiyoTheme.labelMedium.copyWith(color: RiyoTheme.gray400)),
+                  Text(
+                    label,
+                    style: RiyoTheme.labelMedium.copyWith(
+                      color: RiyoTheme.gray400,
+                    ),
+                  ),
                 ],
               ),
       ),

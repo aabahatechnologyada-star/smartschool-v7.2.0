@@ -92,7 +92,8 @@ class _ProfileView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final name = '${student['firstname'] ?? ''} ${student['lastname'] ?? ''}'.trim();
+    final name = '${student['firstname'] ?? ''} ${student['lastname'] ?? ''}'
+        .trim();
     final admissionNo = student['admission_no'] ?? '';
     final className = student['class'] ?? '';
     final section = student['section'] ?? '';
@@ -126,7 +127,11 @@ class _ProfileView extends StatelessWidget {
                   right: 0,
                   child: Padding(
                     padding: const EdgeInsets.fromLTRB(
-                      RiyoTheme.space6, 0, RiyoTheme.space6, RiyoTheme.space6),
+                      RiyoTheme.space6,
+                      0,
+                      RiyoTheme.space6,
+                      RiyoTheme.space6,
+                    ),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
@@ -163,11 +168,14 @@ class _ProfileView extends StatelessWidget {
                                   if (admissionNo.isNotEmpty) ...[
                                     Text(
                                       admissionNo,
-                                      style: RiyoTheme.labelMedium.copyWith(color: RiyoTheme.gray400),
+                                      style: RiyoTheme.labelMedium.copyWith(
+                                        color: RiyoTheme.gray400,
+                                      ),
                                     ),
                                     const SizedBox(width: RiyoTheme.space3),
                                   ],
-                                  if (className.isNotEmpty || section.isNotEmpty) ...[
+                                  if (className.isNotEmpty ||
+                                      section.isNotEmpty) ...[
                                     Container(
                                       padding: const EdgeInsets.symmetric(
                                         horizontal: RiyoTheme.space3,
@@ -175,8 +183,13 @@ class _ProfileView extends StatelessWidget {
                                       ),
                                       decoration: BoxDecoration(
                                         color: RiyoTheme.gray800,
-                                        borderRadius: BorderRadius.circular(RiyoTheme.radiusFull),
-                                        border: Border.all(color: RiyoTheme.gray700, width: 0.5),
+                                        borderRadius: BorderRadius.circular(
+                                          RiyoTheme.radiusFull,
+                                        ),
+                                        border: Border.all(
+                                          color: RiyoTheme.gray700,
+                                          width: 0.5,
+                                        ),
                                       ),
                                       child: Text(
                                         '$className${section.isNotEmpty ? ' - $section' : ''}',
@@ -222,39 +235,63 @@ class _ProfileView extends StatelessWidget {
       ],
       body: TabBarView(
         controller: tabController,
-        children: [
-          _buildPostsTab(),
-          _buildMediaTab(),
-          _buildLikesTab(),
-        ],
+        children: [_buildPostsTab(), _buildMediaTab(), _buildLikesTab()],
       ),
     );
   }
 
   Widget _buildPostsTab() {
-    final name = '${student['firstname'] ?? ''} ${student['lastname'] ?? ''}'.trim();
+    final name = '${student['firstname'] ?? ''} ${student['lastname'] ?? ''}'
+        .trim();
     final admissionNo = student['admission_no'] ?? '';
     final className = student['class'] ?? '';
     final section = student['section'] ?? '';
     final gender = student['gender'] ?? '';
-    
+
     return ListView(
-      padding: const EdgeInsets.only(top: RiyoTheme.space2, bottom: RiyoTheme.space8),
+      padding: const EdgeInsets.only(
+        top: RiyoTheme.space2,
+        bottom: RiyoTheme.space8,
+      ),
       children: [
         _StatRow(
           stats: [
-            _StatItem(label: 'Attendance', value: '95%', icon: Icons.check_circle_outline_rounded),
-            _StatItem(label: 'Fee Status', value: 'Paid', icon: Icons.attach_money_outlined),
-            _StatItem(label: 'Exams', value: '12', icon: Icons.assessment_outlined),
+            _StatItem(
+              label: 'Attendance',
+              value: '95%',
+              icon: Icons.check_circle_outline_rounded,
+            ),
+            _StatItem(
+              label: 'Fee Status',
+              value: 'Paid',
+              icon: Icons.attach_money_outlined,
+            ),
+            _StatItem(
+              label: 'Exams',
+              value: '12',
+              icon: Icons.assessment_outlined,
+            ),
           ],
         ),
         const Divider(height: 1, thickness: 0.5, color: RiyoTheme.gray700),
         _ProfileSection(
           title: 'Academic Info',
           children: [
-            _InfoRow(icon: Icons.class_outlined, label: 'Class', value: '$className - $section'),
-            _InfoRow(icon: Icons.badge_outlined, label: 'Admission No', value: admissionNo),
-            _InfoRow(icon: Icons.person_outline_rounded, label: 'Gender', value: gender),
+            _InfoRow(
+              icon: Icons.class_outlined,
+              label: 'Class',
+              value: '$className - $section',
+            ),
+            _InfoRow(
+              icon: Icons.badge_outlined,
+              label: 'Admission No',
+              value: admissionNo,
+            ),
+            _InfoRow(
+              icon: Icons.person_outline_rounded,
+              label: 'Gender',
+              value: gender,
+            ),
           ],
         ),
         const SizedBox(height: RiyoTheme.space4),
@@ -300,7 +337,11 @@ class _ProfileView extends StatelessWidget {
           ],
         ),
         const SizedBox(height: RiyoTheme.space6),
-        Text('Riyo v7.2.0', style: RiyoTheme.labelSmall.copyWith(color: RiyoTheme.gray500), textAlign: TextAlign.center),
+        Text(
+          'Riyo v7.2.0',
+          style: RiyoTheme.labelSmall.copyWith(color: RiyoTheme.gray500),
+          textAlign: TextAlign.center,
+        ),
         const SizedBox(height: RiyoTheme.space2),
       ],
     );
@@ -328,11 +369,12 @@ class _TabBarDelegate extends SliverPersistentHeaderDelegate {
   _TabBarDelegate(this.tabBar);
 
   @override
-  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
-    return Container(
-      color: RiyoTheme.black,
-      child: tabBar,
-    );
+  Widget build(
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) {
+    return Container(color: RiyoTheme.black, child: tabBar);
   }
 
   @override
@@ -342,7 +384,8 @@ class _TabBarDelegate extends SliverPersistentHeaderDelegate {
   double get minExtent => tabBar.preferredSize.height;
 
   @override
-  bool shouldRebuild(covariant SliverPersistentHeaderDelegate oldDelegate) => false;
+  bool shouldRebuild(covariant SliverPersistentHeaderDelegate oldDelegate) =>
+      false;
 }
 
 class _StatRow extends StatelessWidget {
@@ -357,7 +400,9 @@ class _StatRow extends StatelessWidget {
         vertical: RiyoTheme.space4,
       ),
       child: Row(
-        children: stats.map((stat) => Expanded(child: _StatItemWidget(item: stat))).toList(),
+        children: stats
+            .map((stat) => Expanded(child: _StatItemWidget(item: stat)))
+            .toList(),
       ),
     );
   }
@@ -367,7 +412,11 @@ class _StatItem {
   final String label;
   final String value;
   final IconData icon;
-  const _StatItem({required this.label, required this.value, required this.icon});
+  const _StatItem({
+    required this.label,
+    required this.value,
+    required this.icon,
+  });
 }
 
 class _StatItemWidget extends StatelessWidget {
@@ -380,9 +429,15 @@ class _StatItemWidget extends StatelessWidget {
       children: [
         Icon(item.icon, color: RiyoTheme.gray400, size: 24),
         const SizedBox(height: RiyoTheme.space2),
-        Text(item.value, style: RiyoTheme.headlineMedium.copyWith(fontWeight: FontWeight.w700)),
+        Text(
+          item.value,
+          style: RiyoTheme.headlineMedium.copyWith(fontWeight: FontWeight.w700),
+        ),
         const SizedBox(height: RiyoTheme.space1),
-        Text(item.label, style: RiyoTheme.labelMedium.copyWith(color: RiyoTheme.gray400)),
+        Text(
+          item.label,
+          style: RiyoTheme.labelMedium.copyWith(color: RiyoTheme.gray400),
+        ),
       ],
     );
   }
@@ -399,7 +454,12 @@ class _ProfileSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.fromLTRB(RiyoTheme.space4, 0, RiyoTheme.space4, RiyoTheme.space3),
+          padding: const EdgeInsets.fromLTRB(
+            RiyoTheme.space4,
+            0,
+            RiyoTheme.space4,
+            RiyoTheme.space3,
+          ),
           child: Text(title, style: RiyoTheme.titleMedium),
         ),
         Container(
@@ -409,9 +469,7 @@ class _ProfileSection extends StatelessWidget {
             borderRadius: BorderRadius.circular(RiyoTheme.radiusLg),
             border: Border.all(color: RiyoTheme.gray700, width: 0.5),
           ),
-          child: Column(
-            children: children,
-          ),
+          child: Column(children: children),
         ),
       ],
     );
@@ -422,7 +480,11 @@ class _InfoRow extends StatelessWidget {
   final IconData icon;
   final String label;
   final String value;
-  const _InfoRow({required this.icon, required this.label, required this.value});
+  const _InfoRow({
+    required this.icon,
+    required this.label,
+    required this.value,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -436,7 +498,12 @@ class _InfoRow extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(label, style: RiyoTheme.labelSmall.copyWith(color: RiyoTheme.gray500)),
+                Text(
+                  label,
+                  style: RiyoTheme.labelSmall.copyWith(
+                    color: RiyoTheme.gray500,
+                  ),
+                ),
                 Text(value, style: RiyoTheme.bodyMedium),
               ],
             ),
@@ -483,7 +550,12 @@ class _ActionTile extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(title, style: RiyoTheme.titleMedium),
-                  Text(subtitle, style: RiyoTheme.labelSmall.copyWith(color: RiyoTheme.gray400)),
+                  Text(
+                    subtitle,
+                    style: RiyoTheme.labelSmall.copyWith(
+                      color: RiyoTheme.gray400,
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -502,25 +574,37 @@ class _ProfileSkeleton extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: RiyoTheme.space8),
       children: [
         // Banner area skeleton
-        Container(
-          height: 220,
-          color: RiyoTheme.gray900,
-        ),
+        Container(height: 220, color: RiyoTheme.gray900),
         // Stats row
         Padding(
           padding: const EdgeInsets.all(RiyoTheme.space4),
           child: Row(
-            children: List.generate(3, (index) => Expanded(
-              child: Column(
-                children: [
-                  SkeletonLoader(width: 24, height: 24, borderRadius: BorderRadius.circular(RiyoTheme.radiusFull)),
-                  const SizedBox(height: RiyoTheme.space2),
-                  SkeletonLoader(width: 60, height: 28, borderRadius: BorderRadius.circular(RiyoTheme.radiusFull)),
-                  const SizedBox(height: RiyoTheme.space1),
-                  SkeletonLoader(width: 80, height: 12, borderRadius: BorderRadius.circular(RiyoTheme.radiusFull)),
-                ],
+            children: List.generate(
+              3,
+              (index) => Expanded(
+                child: Column(
+                  children: [
+                    SkeletonLoader(
+                      width: 24,
+                      height: 24,
+                      borderRadius: BorderRadius.circular(RiyoTheme.radiusFull),
+                    ),
+                    const SizedBox(height: RiyoTheme.space2),
+                    SkeletonLoader(
+                      width: 60,
+                      height: 28,
+                      borderRadius: BorderRadius.circular(RiyoTheme.radiusFull),
+                    ),
+                    const SizedBox(height: RiyoTheme.space1),
+                    SkeletonLoader(
+                      width: 80,
+                      height: 12,
+                      borderRadius: BorderRadius.circular(RiyoTheme.radiusFull),
+                    ),
+                  ],
+                ),
               ),
-            )),
+            ),
           ),
         ),
         const Divider(height: 1, thickness: 0.5, color: RiyoTheme.gray700),
@@ -528,7 +612,11 @@ class _ProfileSkeleton extends StatelessWidget {
         // Sections
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: RiyoTheme.space4),
-          child: SkeletonLoader(width: 120, height: 18, borderRadius: BorderRadius.circular(RiyoTheme.radiusFull)),
+          child: SkeletonLoader(
+            width: 120,
+            height: 18,
+            borderRadius: BorderRadius.circular(RiyoTheme.radiusFull),
+          ),
         ),
         const SizedBox(height: RiyoTheme.space3),
         Container(
@@ -539,25 +627,44 @@ class _ProfileSkeleton extends StatelessWidget {
             border: Border.all(color: RiyoTheme.gray700, width: 0.5),
           ),
           child: Column(
-            children: List.generate(3, (index) => Padding(
-              padding: const EdgeInsets.all(RiyoTheme.space4),
-              child: Row(
-                children: [
-                  SkeletonLoader(width: 22, height: 22, borderRadius: BorderRadius.circular(RiyoTheme.radiusFull)),
-                  const SizedBox(width: RiyoTheme.space3),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SkeletonLoader(width: 60, height: 10, borderRadius: BorderRadius.circular(RiyoTheme.radiusFull)),
-                        const SizedBox(height: RiyoTheme.space1),
-                        SkeletonLoader(width: 100, height: 14, borderRadius: BorderRadius.circular(RiyoTheme.radiusFull)),
-                      ],
+            children: List.generate(
+              3,
+              (index) => Padding(
+                padding: const EdgeInsets.all(RiyoTheme.space4),
+                child: Row(
+                  children: [
+                    SkeletonLoader(
+                      width: 22,
+                      height: 22,
+                      borderRadius: BorderRadius.circular(RiyoTheme.radiusFull),
                     ),
-                  ),
-                ],
+                    const SizedBox(width: RiyoTheme.space3),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SkeletonLoader(
+                            width: 60,
+                            height: 10,
+                            borderRadius: BorderRadius.circular(
+                              RiyoTheme.radiusFull,
+                            ),
+                          ),
+                          const SizedBox(height: RiyoTheme.space1),
+                          SkeletonLoader(
+                            width: 100,
+                            height: 14,
+                            borderRadius: BorderRadius.circular(
+                              RiyoTheme.radiusFull,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            )),
+            ),
           ),
         ),
       ],

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import 'api_config.dart';
 import 'riyo_theme.dart';
 
@@ -36,7 +37,8 @@ class _ShimmerEffect extends StatefulWidget {
   State<_ShimmerEffect> createState() => _ShimmerEffectState();
 }
 
-class _ShimmerEffectState extends State<_ShimmerEffect> with SingleTickerProviderStateMixin {
+class _ShimmerEffectState extends State<_ShimmerEffect>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
 
@@ -47,9 +49,10 @@ class _ShimmerEffectState extends State<_ShimmerEffect> with SingleTickerProvide
       duration: const Duration(milliseconds: 1500),
       vsync: this,
     )..repeat(reverse: true);
-    _animation = Tween<double>(begin: 0.4, end: 0.8).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
+    _animation = Tween<double>(
+      begin: 0.4,
+      end: 0.8,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
 
   @override
@@ -75,7 +78,7 @@ class _ShimmerEffectState extends State<_ShimmerEffect> with SingleTickerProvide
                 end: Alignment.centerRight,
                 colors: [
                   RiyoTheme.gray800,
-                  RiyoTheme.gray700.withOpacity(_animation.value),
+                  RiyoTheme.gray700.withValues(alpha: _animation.value),
                   RiyoTheme.gray800,
                 ],
                 stops: const [0.0, 0.5, 1.0],
@@ -120,9 +123,17 @@ class FeedCardSkeleton extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SkeletonLoader(width: 120, height: 20, borderRadius: BorderRadius.circular(RiyoTheme.radiusFull)),
+                    SkeletonLoader(
+                      width: 120,
+                      height: 20,
+                      borderRadius: BorderRadius.circular(RiyoTheme.radiusFull),
+                    ),
                     const SizedBox(height: RiyoTheme.space1),
-                    SkeletonLoader(width: 80, height: 14, borderRadius: BorderRadius.circular(RiyoTheme.radiusFull)),
+                    SkeletonLoader(
+                      width: 80,
+                      height: 14,
+                      borderRadius: BorderRadius.circular(RiyoTheme.radiusFull),
+                    ),
                   ],
                 ),
               ),
@@ -130,11 +141,23 @@ class FeedCardSkeleton extends StatelessWidget {
           ),
           const SizedBox(height: RiyoTheme.space3),
           // Content lines
-          SkeletonLoader(width: double.infinity, height: 20, borderRadius: BorderRadius.circular(RiyoTheme.radiusFull)),
+          SkeletonLoader(
+            width: double.infinity,
+            height: 20,
+            borderRadius: BorderRadius.circular(RiyoTheme.radiusFull),
+          ),
           const SizedBox(height: RiyoTheme.space2),
-          SkeletonLoader(width: double.infinity, height: 20, borderRadius: BorderRadius.circular(RiyoTheme.radiusFull)),
+          SkeletonLoader(
+            width: double.infinity,
+            height: 20,
+            borderRadius: BorderRadius.circular(RiyoTheme.radiusFull),
+          ),
           const SizedBox(height: RiyoTheme.space2),
-          SkeletonLoader(width: 200, height: 20, borderRadius: BorderRadius.circular(RiyoTheme.radiusFull)),
+          SkeletonLoader(
+            width: 200,
+            height: 20,
+            borderRadius: BorderRadius.circular(RiyoTheme.radiusFull),
+          ),
           const SizedBox(height: RiyoTheme.space3),
           // Media placeholder
           SkeletonLoader(
@@ -146,11 +169,14 @@ class FeedCardSkeleton extends StatelessWidget {
           // Action bar
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: List.generate(4, (index) => SkeletonLoader(
-              width: 28,
-              height: 28,
-              borderRadius: BorderRadius.circular(RiyoTheme.radiusFull),
-            )),
+            children: List.generate(
+              4,
+              (index) => SkeletonLoader(
+                width: 28,
+                height: 28,
+                borderRadius: BorderRadius.circular(RiyoTheme.radiusFull),
+              ),
+            ),
           ),
         ],
       ),
@@ -165,20 +191,23 @@ class LoadingView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const CircularProgressIndicator(
-              strokeWidth: 3,
-              valueColor: AlwaysStoppedAnimation<Color>(RiyoTheme.white),
-            ),
-            if (message != null) ...[
-              const SizedBox(height: RiyoTheme.space3),
-              Text(message!, style: RiyoTheme.bodyMedium.copyWith(color: RiyoTheme.gray400)),
-            ],
-          ],
+    child: Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        const CircularProgressIndicator(
+          strokeWidth: 3,
+          valueColor: AlwaysStoppedAnimation<Color>(RiyoTheme.white),
         ),
-      );
+        if (message != null) ...[
+          const SizedBox(height: RiyoTheme.space3),
+          Text(
+            message!,
+            style: RiyoTheme.bodyMedium.copyWith(color: RiyoTheme.gray400),
+          ),
+        ],
+      ],
+    ),
+  );
 }
 
 /// Generic empty-state widget.
@@ -200,60 +229,65 @@ class EmptyView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Center(
-        child: Padding(
-          padding: const EdgeInsets.all(RiyoTheme.space6),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(icon, size: 64, color: RiyoTheme.gray600),
-              const SizedBox(height: RiyoTheme.space4),
-              Text(title, style: RiyoTheme.titleLarge, textAlign: TextAlign.center),
-              if (message != null) ...[
-                const SizedBox(height: RiyoTheme.space2),
-                Text(message!, textAlign: TextAlign.center, style: RiyoTheme.bodyMedium.copyWith(color: RiyoTheme.gray400)),
-              ],
-              if (onAction != null && actionLabel != null) ...[
-                const SizedBox(height: RiyoTheme.space4),
-                ElevatedButton(onPressed: onAction, child: Text(actionLabel!)),
-              ],
-            ],
-          ),
-        ),
-      );
+    child: Padding(
+      padding: const EdgeInsets.all(RiyoTheme.space6),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 64, color: RiyoTheme.gray600),
+          const SizedBox(height: RiyoTheme.space4),
+          Text(title, style: RiyoTheme.titleLarge, textAlign: TextAlign.center),
+          if (message != null) ...[
+            const SizedBox(height: RiyoTheme.space2),
+            Text(
+              message!,
+              textAlign: TextAlign.center,
+              style: RiyoTheme.bodyMedium.copyWith(color: RiyoTheme.gray400),
+            ),
+          ],
+          if (onAction != null && actionLabel != null) ...[
+            const SizedBox(height: RiyoTheme.space4),
+            ElevatedButton(onPressed: onAction, child: Text(actionLabel!)),
+          ],
+        ],
+      ),
+    ),
+  );
+}
 
 /// Generic error widget. Shows the [friendlyError] message and an optional
 /// retry button. If [onRetry] is null the retry button is hidden.
 class ErrorView extends StatelessWidget {
   final Object error;
   final VoidCallback? onRetry;
-  ErrorView({super.key, required this.error, this.onRetry});
+  const ErrorView({super.key, required this.error, this.onRetry});
 
   @override
   Widget build(BuildContext context) => Center(
-        child: Padding(
-          padding: const EdgeInsets.all(RiyoTheme.space6),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(_iconFor(error), size: 56, color: RiyoTheme.gray400),
-              const SizedBox(height: RiyoTheme.space3),
-              Text(
-                friendlyError(error),
-                textAlign: TextAlign.center,
-                style: RiyoTheme.bodyMedium,
-              ),
-              if (onRetry != null) ...[
-                const SizedBox(height: RiyoTheme.space4),
-                ElevatedButton.icon(
-                  onPressed: onRetry,
-                  icon: const Icon(Icons.refresh, size: 18),
-                  label: const Text('Try again'),
-                ),
-              ],
-            ],
+    child: Padding(
+      padding: const EdgeInsets.all(RiyoTheme.space6),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(_iconFor(error), size: 56, color: RiyoTheme.gray400),
+          const SizedBox(height: RiyoTheme.space3),
+          Text(
+            friendlyError(error),
+            textAlign: TextAlign.center,
+            style: RiyoTheme.bodyMedium,
           ),
-        ),
-      );
+          if (onRetry != null) ...[
+            const SizedBox(height: RiyoTheme.space4),
+            ElevatedButton.icon(
+              onPressed: onRetry,
+              icon: const Icon(Icons.refresh, size: 18),
+              label: const Text('Try again'),
+            ),
+          ],
+        ],
+      ),
+    ),
+  );
 
   IconData _iconFor(Object e) {
     if (e is ApiException) {
@@ -283,8 +317,8 @@ class ErrorView extends StatelessWidget {
 /// Convenience: a single widget that switches between loading / error / empty /
 /// real content based on the supplied [AsyncSnapshot]-like state.
 class StateBody<T> extends StatelessWidget {
-  StateBody({
-    Key? key,
+  const StateBody({
+    super.key,
     required this.loading,
     required this.error,
     required this.data,
@@ -295,7 +329,7 @@ class StateBody<T> extends StatelessWidget {
     this.emptyMessage,
     this.emptyIcon = Icons.inbox_outlined,
     this.skeleton,
-  }) : super(key: key);
+  });
 
   final bool loading;
   final Object? error;

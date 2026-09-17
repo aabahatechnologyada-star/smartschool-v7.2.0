@@ -1,8 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io' show SocketException, HttpException, Cookie;
+
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
 import 'api_config.dart';
 
 /// Holds the global 401 handler. When any API call returns 401, the handler
@@ -10,7 +12,8 @@ import 'api_config.dart';
 typedef UnauthorizedHandler = void Function();
 
 class RiyoApi {
-  RiyoApi({UnauthorizedHandler? onUnauthorized}) : _onUnauthorized = onUnauthorized;
+  RiyoApi({UnauthorizedHandler? onUnauthorized})
+    : _onUnauthorized = onUnauthorized;
 
   final _storage = const FlutterSecureStorage();
   UnauthorizedHandler? _onUnauthorized;
@@ -36,7 +39,8 @@ class RiyoApi {
 
   // ---- token storage ----
   Future<String?> get token => _storage.read(key: ApiConfig.TOKEN_KEY);
-  Future<void> saveToken(String t) => _storage.write(key: ApiConfig.TOKEN_KEY, value: t);
+  Future<void> saveToken(String t) =>
+      _storage.write(key: ApiConfig.TOKEN_KEY, value: t);
   Future<void> clearToken() async {
     await _storage.delete(key: ApiConfig.TOKEN_KEY);
   }
@@ -89,8 +93,7 @@ class RiyoApi {
   /// accept the request as browser traffic.
   Map<String, String> _commonHeaders() {
     final h = <String, String>{
-      'User-Agent':
-          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
       'Accept': 'application/json, text/plain, */*',
       'Accept-Language': 'en-US,en;q=0.9',
     };
@@ -115,7 +118,8 @@ class RiyoApi {
     Map<String, String>? query,
     Map<String, String>? body,
   }) async {
-    final uri = Uri.parse('${ApiConfig.BASE_URL}$path').replace(queryParameters: query);
+    final uri = Uri.parse('${ApiConfig.BASE_URL}$path')
+        .replace(queryParameters: query);
 
     ApiException? lastError;
     // Allow one extra retry so the challenge-recovery path (re-warmup) gets
@@ -129,7 +133,9 @@ class RiyoApi {
         };
         late http.Response r;
         if (method == 'GET') {
-          r = await _client.get(uri, headers: headers).timeout(ApiConfig.READ_TIMEOUT);
+          r = await _client
+              .get(uri, headers: headers)
+              .timeout(ApiConfig.READ_TIMEOUT);
         } else {
           r = await _client
               .post(uri, headers: headers, body: body ?? {})
@@ -138,7 +144,10 @@ class RiyoApi {
         _absorbCookies(r);
         return _parse(r);
       } on TimeoutException {
-        lastError = const ApiException(ApiError.timeout, 'The server is taking too long to respond.');
+        lastError = const ApiException(
+          ApiError.timeout,
+          'The server is taking too long to respond.',
+        );
       } on SocketException catch (e) {
         lastError = ApiException(ApiError.noNetwork, e.message);
       } on HttpException catch (e) {
@@ -147,14 +156,17 @@ class RiyoApi {
         lastError = ApiException(ApiError.noNetwork, e.message);
       } on FormatException {
         lastError = const ApiException(
-            ApiError.invalidResponse, 'The server response was not valid JSON.');
+          ApiError.invalidResponse,
+          'The server response was not valid JSON.',
+        );
       } catch (e) {
         lastError = ApiException(ApiError.unknown, e.toString());
       }
 
       // On challenge (invalidResponse), re-warmup before retrying so the
       // server can set any required cookies.
-      if (lastError?.code == ApiError.invalidResponse || lastError?.code == ApiError.unknown) {
+      if (lastError?.code == ApiError.invalidResponse ||
+          lastError?.code == ApiError.unknown) {
         try {
           await _warmup();
         } catch (_) {}
@@ -201,7 +213,11 @@ class RiyoApi {
     }
     if (r.statusCode >= 400) {
       final code = _mapHttp(r.statusCode);
-      throw ApiException(code, 'HTTP ${r.statusCode}', httpStatus: r.statusCode);
+      throw ApiException(
+        code,
+        'HTTP ${r.statusCode}',
+        httpStatus: r.statusCode,
+      );
     }
     return body;
   }
@@ -216,7 +232,8 @@ class RiyoApi {
   }
 
   ApiError _mapHttpAndMessage(int s, String msg) {
-    if (s == 401 || msg.toLowerCase() == 'unauthorized') return ApiError.unauthorized;
+    if (s == 401 || msg.toLowerCase() == 'unauthorized')
+      return ApiError.unauthorized;
     return _mapHttp(s);
   }
 
@@ -247,23 +264,30 @@ class RiyoApi {
     // The InfinityFree JS challenge on the login POST is the most common
     // failure point — warm up again right before login so cookies are fresh.
     if (!_warmed) await _warmup();
-    final body = await _request('POST', '/riyo_api/login', body: {
-      'username': username,
-      'password': password,
-    });
+    final body = await _request(
+      'POST',
+      '/riyo_api/login',
+      body: {'username': username, 'password': password},
+    );
     if (body['token'] is String) await saveToken(body['token'] as String);
     return body;
   }
 
   Future<Map<String, dynamic>> profile() async => _get('/riyo_api/profile');
-  Future<Map<String, dynamic>> attendance([String? month]) async =>
-      _get('/riyo_api/attendance', query: month != null ? {'month': month} : null);
+  Future<Map<String, dynamic>> attendance([String? month]) async => _get(
+    '/riyo_api/attendance',
+    query: month != null ? {'month': month} : null,
+  );
   Future<Map<String, dynamic>> fees() async => _get('/riyo_api/fees');
   Future<Map<String, dynamic>> notices() async => _get('/riyo_api/notices');
-  Future<Map<String, dynamic>> examResults() async => _get('/riyo_api/examresults');
+  Future<Map<String, dynamic>> examResults() async =>
+      _get('/riyo_api/examresults');
   Future<Map<String, dynamic>> dashboard() async => _get('/riyo_api/dashboard');
 
-  Future<Map<String, dynamic>> _get(String path, {Map<String, String>? query}) async {
+  Future<Map<String, dynamic>> _get(
+    String path, {
+    Map<String, String>? query,
+  }) async {
     final tok = await token;
     if (tok == null) {
       throw const ApiException(ApiError.unauthorized, 'You are not logged in.');
@@ -273,5 +297,6 @@ class RiyoApi {
   }
 
   /// Diagnostics: hit the setup endpoint and return whatever JSON it returns.
-  Future<Map<String, dynamic>> setup() async => _request('GET', '/riyo_api/setup');
+  Future<Map<String, dynamic>> setup() async =>
+      _request('GET', '/riyo_api/setup');
 }
