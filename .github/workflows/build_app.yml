@@ -95,7 +95,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: riyo-app-release-apk
-          path: riyo_app/build/app/outputs/flutter-apk/app-release.apk
+          path: build/app/outputs/flutter-apk/app-release.apk
           if-no-files-found: error
 
   # iOS — requires macOS + Xcode. Builds the unsigned .app (no-codesign).
@@ -175,5 +175,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: riyo-app-release-ios
-          path: riyo_app/build/ios/iphoneos/Runner.app
+          path: build/ios/iphoneos/Runner.app
           if-no-files-found: warn
