@@ -85,7 +85,10 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: riyo-app-release-apk
-          path: build/app/outputs/flutter-apk/*.apk
+          path: |
+            build/app/outputs/flutter-apk/*.apk
+            build/app/outputs/flutter-apk/**/*.apk
+            build/app/outputs/**/*.apk
           if-no-files-found: error
 
       - name: Upload build logs on failure
