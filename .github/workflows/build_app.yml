@@ -68,17 +68,17 @@ jobs:
 
       - name: Build APK (release)
         run: |
-          flutter build apk --release --verbose 2>&1 | tee riyo_app/build/android-build.log
+          flutter build apk --release --verbose 2>&1 | tee build/android-build.log
 
       - name: List build directory (debug)
         if: failure()
         run: |
-          echo "=== riyo_app/build ==="
-          find riyo_app/build -type f -name "*.log" 2>/dev/null | head -20
-          echo "=== riyo_app/android ==="
-          find riyo_app/android -type f -name "*.log" 2>/dev/null | head -20
-          echo "=== riyo_app/.dart_tool ==="
-          find riyo_app/.dart_tool -type f -name "*.log" 2>/dev/null | head -20
+          echo "=== build ==="
+          find build -type f -name "*.log" 2>/dev/null | head -20
+          echo "=== android ==="
+          find android -type f -name "*.log" 2>/dev/null | head -20
+          echo "=== .dart_tool ==="
+          find .dart_tool -type f -name "*.log" 2>/dev/null | head -20
 
       - name: Upload build logs on failure
         if: failure()
@@ -86,9 +86,9 @@ jobs:
         with:
           name: android-build-logs
           path: |
-            riyo_app/build/**/*.log
-            riyo_app/android/**/*.log
-            riyo_app/.dart_tool/**/*.log
+            build/**/*.log
+            android/**/*.log
+            .dart_tool/**/*.log
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
@@ -147,17 +147,17 @@ jobs:
 
       - name: Build iOS (release, no codesign)
         run: |
-          flutter build ios --release --no-codesign --verbose 2>&1 | tee riyo_app/build/ios-build.log
+          flutter build ios --release --no-codesign --verbose 2>&1 | tee build/ios-build.log
 
       - name: List build directory (debug)
         if: failure()
         run: |
-          echo "=== riyo_app/build ==="
-          find riyo_app/build -type f -name "*.log" 2>/dev/null | head -20
-          echo "=== riyo_app/ios ==="
-          find riyo_app/ios -type f -name "*.log" 2>/dev/null | head -20
-          echo "=== riyo_app/.dart_tool ==="
-          find riyo_app/.dart_tool -type f -name "*.log" 2>/dev/null | head -20
+          echo "=== build ==="
+          find build -type f -name "*.log" 2>/dev/null | head -20
+          echo "=== ios ==="
+          find ios -type f -name "*.log" 2>/dev/null | head -20
+          echo "=== .dart_tool ==="
+          find .dart_tool -type f -name "*.log" 2>/dev/null | head -20
 
       - name: Upload build logs on failure
         if: failure()
@@ -165,9 +165,9 @@ jobs:
         with:
           name: ios-build-logs
           path: |
-            riyo_app/build/**/*.log
-            riyo_app/ios/**/*.log
-            riyo_app/.dart_tool/**/*.log
+            build/**/*.log
+            ios/**/*.log
+            .dart_tool/**/*.log
 
       - name: Upload iOS artifact
         uses: actions/upload-artifact@v4
