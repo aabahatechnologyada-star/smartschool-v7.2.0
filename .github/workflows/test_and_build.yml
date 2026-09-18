@@ -37,7 +37,7 @@ jobs:
           done
 
       - name: Generate localizations
-        run: flutter gen-l10n
+        run: flutter gen-l10n --verbose
 
       - name: Run unit tests
         run: flutter test test/ --coverage
@@ -89,7 +89,7 @@ jobs:
         run: python3 tool/patch_perms.py android
 
       - name: Generate localizations
-        run: flutter gen-l10n
+        run: flutter gen-l10n --verbose
 
       - name: Install dependencies
         run: |
@@ -183,7 +183,7 @@ jobs:
         run: python3 tool/patch_perms.py ios
 
       - name: Generate localizations
-        run: flutter gen-l10n
+        run: flutter gen-l10n --verbose
 
       - name: Install dependencies
         run: |
