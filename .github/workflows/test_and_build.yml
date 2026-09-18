@@ -33,9 +33,6 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Generate mocks
-        run: dart run build_runner build --delete-conflicting-outputs
-
       - name: Run unit tests
         run: flutter test test/ --coverage
 
@@ -84,6 +81,9 @@ jobs:
 
       - name: Patch Android permissions
         run: python3 tool/patch_perms.py android
+
+      - name: Generate localizations
+        run: flutter gen-l10n
 
       - name: Install dependencies
         run: flutter pub get
@@ -169,6 +169,9 @@ jobs:
 
       - name: Patch iOS Info.plist
         run: python3 tool/patch_perms.py ios
+
+      - name: Generate localizations
+        run: flutter gen-l10n
 
       - name: Install dependencies
         run: flutter pub get
