@@ -30,11 +30,11 @@ jobs:
           channel: 'stable'
           cache: true
 
-      - name: Generate localizations
-        run: flutter gen-l10n --verbose
-
       - name: Install dependencies
         run: flutter pub get
+
+      - name: Generate localizations
+        run: flutter gen-l10n
 
       - name: Run unit tests
         run: flutter test test/ --coverage
@@ -86,7 +86,7 @@ jobs:
         run: python3 tool/patch_perms.py android
 
       - name: Generate localizations
-        run: flutter gen-l10n --verbose
+        run: flutter gen-l10n
 
       - name: Install dependencies
         run: flutter pub get
@@ -177,7 +177,7 @@ jobs:
         run: python3 tool/patch_perms.py ios
 
       - name: Generate localizations
-        run: flutter gen-l10n --verbose
+        run: flutter gen-l10n
 
       - name: Install dependencies
         run: flutter pub get
