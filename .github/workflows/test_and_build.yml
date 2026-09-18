@@ -36,9 +36,6 @@ jobs:
             flutter pub get && break || sleep 10
           done
 
-      - name: Generate localizations
-        run: flutter gen-l10n --verbose
-
       - name: Run unit tests
         run: flutter test test/ --coverage
 
@@ -84,9 +81,6 @@ jobs:
       - name: Remove generated test/ and README.md
         run: |
           rm -rf test README.md || true
-
-      - name: Patch Android permissions
-        run: python3 tool/patch_perms.py android
 
       - name: Generate localizations
         run: flutter gen-l10n --verbose
