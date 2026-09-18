@@ -31,7 +31,10 @@ jobs:
           cache: true
 
       - name: Install dependencies
-        run: flutter pub get
+        run: |
+          for i in 1 2 3; do
+            flutter pub get && break || sleep 10
+          done
 
       - name: Generate localizations
         run: flutter gen-l10n
@@ -89,7 +92,10 @@ jobs:
         run: flutter gen-l10n
 
       - name: Install dependencies
-        run: flutter pub get
+        run: |
+          for i in 1 2 3; do
+            flutter pub get && break || sleep 10
+          done
 
       - name: Analyze
         run: flutter analyze
@@ -180,7 +186,10 @@ jobs:
         run: flutter gen-l10n
 
       - name: Install dependencies
-        run: flutter pub get
+        run: |
+          for i in 1 2 3; do
+            flutter pub get && break || sleep 10
+          done
 
       - name: Install iOS pods
         run: cd ios && pod install && cd ..
