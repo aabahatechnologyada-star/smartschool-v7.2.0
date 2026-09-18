@@ -110,7 +110,6 @@ class _ProfileView extends StatelessWidget {
             background: Stack(
               fit: StackFit.expand,
               children: [
-                // Banner background
                 Container(
                   decoration: const BoxDecoration(
                     gradient: LinearGradient(
@@ -120,7 +119,6 @@ class _ProfileView extends StatelessWidget {
                     ),
                   ),
                 ),
-                // Profile content
                 Positioned(
                   bottom: 0,
                   left: 0,
@@ -135,7 +133,6 @@ class _ProfileView extends StatelessWidget {
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        // Avatar
                         CircleAvatar(
                           radius: 40,
                           backgroundColor: RiyoTheme.gray800,
@@ -148,7 +145,6 @@ class _ProfileView extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(width: RiyoTheme.space4),
-                        // Name & info
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -202,7 +198,6 @@ class _ProfileView extends StatelessWidget {
                             ],
                           ),
                         ),
-                        // Edit button
                         OutlinedButton.icon(
                           onPressed: () {},
                           icon: const Icon(Icons.edit_outlined, size: 18),
@@ -302,13 +297,17 @@ class _ProfileView extends StatelessWidget {
               icon: Icons.assessment_outlined,
               title: 'Exam Results',
               subtitle: 'View all published results',
-              onTap: () {},
+              onTap: () {
+                Navigator.pushNamed(context, '/exam-results');
+              },
             ),
             _ActionTile(
               icon: Icons.check_circle_outlined,
               title: 'Attendance',
               subtitle: 'Detailed attendance record',
-              onTap: () {},
+              onTap: () {
+                Navigator.pushNamed(context, '/attendance');
+              },
             ),
             _ActionTile(
               icon: Icons.attach_money_outlined,
@@ -573,9 +572,7 @@ class _ProfileSkeleton extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.only(bottom: RiyoTheme.space8),
       children: [
-        // Banner area skeleton
         Container(height: 220, color: RiyoTheme.gray900),
-        // Stats row
         Padding(
           padding: const EdgeInsets.all(RiyoTheme.space4),
           child: Row(
@@ -609,7 +606,6 @@ class _ProfileSkeleton extends StatelessWidget {
         ),
         const Divider(height: 1, thickness: 0.5, color: RiyoTheme.gray700),
         const SizedBox(height: RiyoTheme.space4),
-        // Sections
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: RiyoTheme.space4),
           child: SkeletonLoader(

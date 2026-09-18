@@ -242,85 +242,141 @@ class _FeedCard extends StatelessWidget {
           child: Text(item['content'] as String, style: RiyoTheme.bodyLarge),
         );
       case 'exam_result':
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (item['percentage'] != null) ...[
-              Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: RiyoTheme.space3,
-                      vertical: RiyoTheme.space1,
+        return InkWell(
+          onTap: () {
+            Navigator.pushNamed(
+              context,
+              '/exam-result',
+              arguments: {
+                'examResult': item,
+                'session': item['subtitle']?.split(' · ').last ?? '',
+                'className': item['subtitle']?.split(' · ').first ?? '',
+              },
+            );
+          },
+          borderRadius: BorderRadius.only(
+            bottomLeft: Radius.circular(RiyoTheme.radiusLg),
+            bottomRight: Radius.circular(RiyoTheme.radiusLg),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (item['percentage'] != null) ...[
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: RiyoTheme.space3,
+                        vertical: RiyoTheme.space1,
+                      ),
+                      decoration: BoxDecoration(
+                        color: RiyoTheme.gray800,
+                        borderRadius: BorderRadius.circular(
+                          RiyoTheme.radiusFull,
+                        ),
+                        border: Border.all(
+                          color: RiyoTheme.gray700,
+                          width: 0.5,
+                        ),
+                      ),
+                      child: Text(
+                        '${item['percentage']}%',
+                        style: RiyoTheme.labelLarge.copyWith(
+                          fontWeight: FontWeight.w700,
+                          fontFeatures: const [FontFeature.tabularFigures()],
+                        ),
+                      ),
                     ),
-                    decoration: BoxDecoration(
-                      color: RiyoTheme.gray800,
-                      borderRadius: BorderRadius.circular(RiyoTheme.radiusFull),
-                      border: Border.all(color: RiyoTheme.gray700, width: 0.5),
+                    const SizedBox(width: RiyoTheme.space2),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: RiyoTheme.space3,
+                        vertical: RiyoTheme.space1,
+                      ),
+                      decoration: BoxDecoration(
+                        color: RiyoTheme.gray800,
+                        borderRadius: BorderRadius.circular(
+                          RiyoTheme.radiusFull,
+                        ),
+                        border: Border.all(
+                          color: RiyoTheme.gray700,
+                          width: 0.5,
+                        ),
+                      ),
+                      child: Text(
+                        'Grade ${item['grade']}',
+                        style: RiyoTheme.labelMedium,
+                      ),
                     ),
+                  ],
+                ),
+                const SizedBox(height: RiyoTheme.space3),
+              ],
+              if (item['subjects'] != null) ...[
+                Wrap(
+                  spacing: RiyoTheme.space2,
+                  runSpacing: RiyoTheme.space2,
+                  children: (item['subjects'] as List).take(4).map<Widget>((
+                    sub,
+                  ) {
+                    return Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: RiyoTheme.space3,
+                        vertical: RiyoTheme.space1,
+                      ),
+                      decoration: BoxDecoration(
+                        color: RiyoTheme.gray800,
+                        borderRadius: BorderRadius.circular(
+                          RiyoTheme.radiusFull,
+                        ),
+                        border: Border.all(
+                          color: RiyoTheme.gray700,
+                          width: 0.5,
+                        ),
+                      ),
+                      child: Text(
+                        '${sub['subject']}: ${sub['get_marks'] ?? '-'}/${sub['max_marks'] ?? '-'}',
+                        style: RiyoTheme.labelSmall,
+                      ),
+                    );
+                  }).toList(),
+                ),
+                if ((item['subjects'] as List).length > 4)
+                  Padding(
+                    padding: const EdgeInsets.only(top: RiyoTheme.space2),
                     child: Text(
-                      '${item['percentage']}%',
-                      style: RiyoTheme.labelLarge.copyWith(
-                        fontWeight: FontWeight.w700,
-                        fontFeatures: const [FontFeature.tabularFigures()],
+                      '+ ${(item['subjects'] as List).length - 4} more subjects',
+                      style: RiyoTheme.labelSmall.copyWith(
+                        color: RiyoTheme.gray400,
                       ),
                     ),
                   ),
-                  const SizedBox(width: RiyoTheme.space2),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: RiyoTheme.space3,
-                      vertical: RiyoTheme.space1,
+              ],
+              const SizedBox(height: RiyoTheme.space2),
+              // Tap hint
+              Padding(
+                padding: const EdgeInsets.only(top: RiyoTheme.space2),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.arrow_forward_rounded,
+                      size: 16,
+                      color: RiyoTheme.gray600,
                     ),
-                    decoration: BoxDecoration(
-                      color: RiyoTheme.gray800,
-                      borderRadius: BorderRadius.circular(RiyoTheme.radiusFull),
-                      border: Border.all(color: RiyoTheme.gray700, width: 0.5),
+                    const SizedBox(width: RiyoTheme.space1),
+                    Text(
+                      'Tap for full details',
+                      style: RiyoTheme.labelSmall.copyWith(
+                        color: RiyoTheme.gray500,
+                      ),
                     ),
-                    child: Text(
-                      'Grade ${item['grade']}',
-                      style: RiyoTheme.labelMedium,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: RiyoTheme.space3),
-            ],
-            if (item['subjects'] != null) ...[
-              Wrap(
-                spacing: RiyoTheme.space2,
-                runSpacing: RiyoTheme.space2,
-                children: (item['subjects'] as List).take(4).map<Widget>((sub) {
-                  return Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: RiyoTheme.space3,
-                      vertical: RiyoTheme.space1,
-                    ),
-                    decoration: BoxDecoration(
-                      color: RiyoTheme.gray800,
-                      borderRadius: BorderRadius.circular(RiyoTheme.radiusFull),
-                      border: Border.all(color: RiyoTheme.gray700, width: 0.5),
-                    ),
-                    child: Text(
-                      '${sub['subject']}: ${sub['get_marks'] ?? '-'}/${sub['max_marks'] ?? '-'}',
-                      style: RiyoTheme.labelSmall,
-                    ),
-                  );
-                }).toList(),
-              ),
-              if ((item['subjects'] as List).length > 4)
-                Padding(
-                  padding: const EdgeInsets.only(top: RiyoTheme.space2),
-                  child: Text(
-                    '+ ${(item['subjects'] as List).length - 4} more subjects',
-                    style: RiyoTheme.labelSmall.copyWith(
-                      color: RiyoTheme.gray400,
-                    ),
-                  ),
+                  ],
                 ),
+              ),
+              const SizedBox(height: RiyoTheme.space2),
             ],
-            const SizedBox(height: RiyoTheme.space2),
-          ],
+          ),
         );
       default:
         return const SizedBox.shrink();

@@ -4,10 +4,10 @@ import 'package:riyo_app/api_config.dart';
 import 'package:riyo_app/riyo_theme.dart';
 import 'package:riyo_app/state_widgets.dart';
 import 'package:riyo_app/screens/home_feed_screen.dart';
-import 'package:riyo_app/screens/search_screen.dart';
-import 'package:riyo_app/screens/notifications_screen.dart';
-import 'package:riyo_app/screens/messages_screen.dart';
+import 'package:riyo_app/screens/exam_results_screen.dart';
+import 'package:riyo_app/screens/attendance_screen.dart';
 import 'package:riyo_app/screens/profile_screen.dart';
+import 'package:riyo_app/screens/exam_result_detail_screen.dart';
 
 // Single shared API client. The 401 handler is set after MaterialApp is built
 // so the navigator is available to pop to the login screen when the token expires.
@@ -52,6 +52,19 @@ class _RiyoAppState extends State<RiyoApp> {
     navigatorKey: _navKey,
     home: const _RootGate(),
     debugShowCheckedModeBanner: false,
+    routes: {
+      '/exam-result': (context) {
+        final args =
+            ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>?;
+        return ExamResultDetailScreen(
+          examResult: args?['examResult'] as Map<String, dynamic>? ?? {},
+          session: args?['session'] as String? ?? '',
+          className: args?['className'] as String? ?? '',
+        );
+      },
+      '/exam-results': (context) => const ExamResultsScreen(),
+      '/attendance': (context) => const AttendanceScreen(),
+    },
   );
 }
 
@@ -253,9 +266,8 @@ class _MainAppState extends State<MainApp> with TickerProviderStateMixin {
     _pageController = PageController();
     _pages = const [
       HomeFeedScreen(),
-      SearchScreen(),
-      NotificationsScreen(),
-      MessagesScreen(),
+      ExamResultsScreen(),
+      AttendanceScreen(),
       ProfileScreen(),
     ];
   }
@@ -298,19 +310,14 @@ class _MainAppState extends State<MainApp> with TickerProviderStateMixin {
             label: 'Home',
           ),
           NavigationDestination(
-            icon: Icon(Icons.search_outlined),
-            selectedIcon: Icon(Icons.search_rounded),
-            label: 'Search',
+            icon: Icon(Icons.assessment_outlined),
+            selectedIcon: Icon(Icons.assessment_rounded),
+            label: 'Results',
           ),
           NavigationDestination(
-            icon: Icon(Icons.notifications_outlined),
-            selectedIcon: Icon(Icons.notifications_rounded),
-            label: 'Notifications',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.chat_bubble_outline_rounded),
-            selectedIcon: Icon(Icons.chat_bubble_rounded),
-            label: 'Messages',
+            icon: Icon(Icons.calendar_today_outlined),
+            selectedIcon: Icon(Icons.calendar_today_rounded),
+            label: 'Attendance',
           ),
           NavigationDestination(
             icon: Icon(Icons.person_outline_rounded),
