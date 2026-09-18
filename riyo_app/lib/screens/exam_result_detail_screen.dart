@@ -234,7 +234,7 @@ class ExamResultDetailScreen extends StatelessWidget {
                         ),
                       ],
                     ),
-                  ),
+                  ],
                 );
             },
           ),
