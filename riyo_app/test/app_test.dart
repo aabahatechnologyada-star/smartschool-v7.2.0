@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:riyo_app/api_config.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -12,12 +13,12 @@ void main() {
     test('token storage works', () async {
       SharedPreferences.setMockInitialValues({});
       final prefs = await SharedPreferences.getInstance();
-      
+
       await prefs.setString('riyo_api_token', 'test-token');
       final token = prefs.getString('riyo_api_token');
-      
+
       expect(token, 'test-token');
-      
+
       await prefs.remove('riyo_api_token');
       final removed = prefs.getString('riyo_api_token');
       expect(removed, isNull);
@@ -39,7 +40,7 @@ void main() {
 
       final response = await mockClient.post(
         Uri.parse('http://localhost/riyo_api/login'),
-        body: {'username': 'test', 'password': 'pass'},
+        body: {'admission_no': 'test', 'password': 'pass'},
       );
 
       expect(response.statusCode, 200);
@@ -110,16 +111,4 @@ void main() {
       expect(mapHttp(418), ApiError.unknown);
     });
   });
-}
-
-enum ApiError {
-  noNetwork,
-  timeout,
-  unauthorized,
-  forbidden,
-  notFound,
-  serverError,
-  badRequest,
-  invalidResponse,
-  unknown,
 }
