@@ -260,14 +260,17 @@ class RiyoApi {
 
   // ---- public endpoints ----
 
-  Future<Map<String, dynamic>> login(String username, String password) async {
+  Future<Map<String, dynamic>> login(
+    String admissionNo,
+    String password,
+  ) async {
     // The InfinityFree JS challenge on the login POST is the most common
     // failure point — warm up again right before login so cookies are fresh.
     if (!_warmed) await _warmup();
     final body = await _request(
       'POST',
       '/riyo_api/login',
-      body: {'username': username, 'password': password},
+      body: {'admission_no': admissionNo, 'password': password},
     );
     if (body['token'] is String) await saveToken(body['token'] as String);
     return body;

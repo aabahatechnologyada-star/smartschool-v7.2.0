@@ -133,20 +133,25 @@ class _LoginScreenState extends State<LoginScreen> {
   String? _err;
 
   Future<void> _login() async {
+    final admissionNo = _user.text.trim();
+    final password = _pass.text;
+
+    if (admissionNo.isEmpty || password.isEmpty) {
+      setState(() => _err = 'Please enter both admission number and password');
+      return;
+    }
+
     setState(() {
       _busy = true;
       _err = null;
     });
     try {
-      final res = await api.login(_user.text.trim(), _pass.text);
+      final res = await api.login(admissionNo, password);
       if (!mounted) return;
       if (res['status'] == 'success') {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (_) => const MainApp()),
-        );
+        Navigator.pushReplacementNamed(context, '/');
       } else {
-        setState(() => _err = 'Unexpected response from the server.');
+        setState(() => _err = res['message']?.toString() ?? 'Login failed');
       }
     } catch (e) {
       if (mounted) setState(() => _err = friendlyError(e));
@@ -201,7 +206,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         enabled: !_busy,
                         style: RiyoTheme.bodyLarge,
                         decoration: InputDecoration(
-                          labelText: 'Admission No / Username',
+                          labelText: 'Admission No',
                           prefixIcon: const Icon(Icons.person_outline_rounded),
                           labelStyle: RiyoTheme.bodyMedium.copyWith(
                             color: RiyoTheme.gray400,
