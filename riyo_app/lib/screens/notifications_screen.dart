@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:riyo_app/riyo_api.dart';
 import 'package:riyo_app/riyo_theme.dart';
 import 'package:riyo_app/state_widgets.dart';
@@ -17,11 +18,13 @@ class _NotificationsScreenState extends State<NotificationsScreen>
   List<Map<String, dynamic>> _mentionsNotifications = [];
   bool _loading = true;
   Object? _error;
+  Set<String> _readIds = {};
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    _loadReadState();
     _loadNotifications();
   }
 
@@ -29,6 +32,42 @@ class _NotificationsScreenState extends State<NotificationsScreen>
   void dispose() {
     _tabController.dispose();
     super.dispose();
+  }
+
+  Future<void> _loadReadState() async {
+    final prefs = await SharedPreferences.getInstance();
+    final readIds = prefs.getStringList('notification_read_ids') ?? [];
+    if (mounted) {
+      setState(() => _readIds = readIds.toSet());
+    }
+  }
+
+  Future<void> _saveReadState() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList('notification_read_ids', _readIds.toList());
+  }
+
+  bool _isRead(String id) => _readIds.contains(id);
+
+  Future<void> _markAsRead(String id) async {
+    if (!_readIds.contains(id)) {
+      _readIds.add(id);
+      await _saveReadState();
+      if (mounted) setState(() {});
+    }
+  }
+
+  Future<void> _markAllAsRead() async {
+    final allIds = [
+      ..._allNotifications.map((n) => n['id'] as String),
+      ..._mentionsNotifications.map((n) => n['id'] as String),
+    ];
+    _readIds.addAll(allIds);
+    await _saveReadState();
+    if (mounted) setState(() {});
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('All notifications marked as read')),
+    );
   }
 
   Future<void> _loadNotifications({bool refresh = false}) async {
@@ -46,7 +85,6 @@ class _NotificationsScreenState extends State<NotificationsScreen>
               'title': notice['title'],
               'content': notice['message'],
               'date': notice['date'],
-              'read': false,
               'icon': Icons.campaign_outlined,
             },
           )
@@ -62,7 +100,6 @@ class _NotificationsScreenState extends State<NotificationsScreen>
           'date': DateTime.now()
               .subtract(const Duration(hours: 2))
               .toIso8601String(),
-          'read': false,
           'icon': Icons.assignment_outlined,
         },
         {
@@ -73,7 +110,6 @@ class _NotificationsScreenState extends State<NotificationsScreen>
           'date': DateTime.now()
               .subtract(const Duration(days: 1))
               .toIso8601String(),
-          'read': true,
           'icon': Icons.assessment_outlined,
         },
       ];
@@ -162,30 +198,38 @@ class _NotificationsScreenState extends State<NotificationsScreen>
         bottom: RiyoTheme.space8,
       ),
       itemCount: notifications.length,
-      itemBuilder: (context, index) =>
-          _NotificationTile(notification: notifications[index]),
-    );
-  }
-
-  void _markAllAsRead() {
-    setState(() {
-      for (var n in _allNotifications) n['read'] = true;
-      for (var n in _mentionsNotifications) n['read'] = true;
-    });
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('All notifications marked as read')),
+      itemBuilder: (context, index) => _NotificationTile(
+        notification: notifications[index],
+        isRead: _isRead(notifications[index]['id'] as String),
+        onTap: () {
+          final notif = notifications[index];
+          _markAsRead(notif['id'] as String);
+          Navigator.pushNamed(
+            context,
+            '/notification-detail',
+            arguments: notif,
+          );
+        },
+      ),
     );
   }
 }
 
 class _NotificationTile extends StatelessWidget {
   final Map<String, dynamic> notification;
-  const _NotificationTile({required this.notification});
+  final bool isRead;
+  final VoidCallback onTap;
+
+  const _NotificationTile({
+    required this.notification,
+    required this.isRead,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final read = notification['read'] as bool;
     final dateStr = notification['date'] as String;
+    final read = isRead;
 
     return Container(
       margin: const EdgeInsets.symmetric(
@@ -205,9 +249,7 @@ class _NotificationTile extends StatelessWidget {
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          onTap: () {
-            // Mark as read, navigate to detail
-          },
+          onTap: onTap,
           borderRadius: BorderRadius.circular(RiyoTheme.radiusMd),
           child: Padding(
             padding: const EdgeInsets.all(RiyoTheme.space4),

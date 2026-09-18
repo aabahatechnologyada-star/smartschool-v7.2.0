@@ -9,6 +9,7 @@ import 'package:riyo_app/screens/exam_results_screen.dart';
 import 'package:riyo_app/screens/attendance_screen.dart';
 import 'package:riyo_app/screens/profile_screen.dart';
 import 'package:riyo_app/screens/exam_result_detail_screen.dart';
+import 'package:riyo_app/screens/notification_detail_screen.dart';
 import 'package:riyo_app/l10n/generated/app_localizations.dart';
 
 // Single shared API client. The 401 handler is set after MaterialApp is built
@@ -83,6 +84,11 @@ class _RiyoAppState extends State<RiyoApp> {
       },
       '/exam-results': (context) => const ExamResultsScreen(),
       '/attendance': (context) => const AttendanceScreen(),
+      '/notification-detail': (context) {
+        final args =
+            ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>?;
+        return NotificationDetailScreen(notification: args ?? {});
+      },
     },
   );
 }
