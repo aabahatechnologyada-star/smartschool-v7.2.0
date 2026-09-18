@@ -31,7 +31,7 @@ jobs:
           cache: true
 
       - name: Generate localizations
-        run: flutter gen-l10n
+        run: flutter gen-l10n --verbose
 
       - name: Install dependencies
         run: flutter pub get
@@ -86,7 +86,7 @@ jobs:
         run: python3 tool/patch_perms.py android
 
       - name: Generate localizations
-        run: flutter gen-l10n
+        run: flutter gen-l10n --verbose
 
       - name: Install dependencies
         run: flutter pub get
@@ -177,7 +177,7 @@ jobs:
         run: python3 tool/patch_perms.py ios
 
       - name: Generate localizations
-        run: flutter gen-l10n
+        run: flutter gen-l10n --verbose
 
       - name: Install dependencies
         run: flutter pub get
