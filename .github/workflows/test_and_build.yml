@@ -103,9 +103,9 @@ jobs:
           echo "=== build/app/outputs/flutter-apk ==="
           find build/app/outputs/flutter-apk -type f 2>/dev/null || echo "No files found"
           echo "=== build/app/outputs ==="
-          find build/app/outputs -type f -name "*.apk" 2>/dev/null || echo "No files found"
-          echo "=== ALL .apk files in build ==="
-          find build -type f -name "*.apk" 2>/dev/null || echo "No files found"
+          find build/app/outputs -type f 2>/dev/null || echo "No files found"
+          echo "=== ALL files in build ==="
+          find build -type f 2>/dev/null | head -50 || echo "No files found"
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
@@ -115,6 +115,7 @@ jobs:
             build/app/outputs/flutter-apk/*.apk
             build/app/outputs/flutter-apk/**/*.apk
             build/app/outputs/**/*.apk
+            build/**/*.apk
           if-no-files-found: error
 
       - name: Upload build logs on failure
