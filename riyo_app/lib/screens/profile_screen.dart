@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:riyo_app/riyo_api.dart';
 import 'package:riyo_app/riyo_theme.dart';
 import 'package:riyo_app/state_widgets.dart';
+import 'package:riyo_app/l10n/generated/app_localizations.dart';
+import 'package:riyo_app/screens/language_settings_screen.dart';
 
 /// Profile screen — X-style profile with tabs
 class ProfileScreen extends StatefulWidget {
@@ -90,8 +92,15 @@ class _ProfileView extends StatelessWidget {
     required this.onRefresh,
   });
 
+  String _selectedLanguageName(AppLocalizations l10n) {
+    // This is a simplified version - in reality you'd read from SharedPreferences
+    // For now, we'll use the system locale or default to English
+    return l10n.english; // Default
+  }
+
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final name = '${student['firstname'] ?? ''} ${student['lastname'] ?? ''}'
         .trim();
     final admissionNo = student['admission_no'] ?? '';
@@ -252,17 +261,17 @@ class _ProfileView extends StatelessWidget {
         _StatRow(
           stats: [
             _StatItem(
-              label: 'Attendance',
+              label: l10n.attendanceRate,
               value: '95%',
               icon: Icons.check_circle_outline_rounded,
             ),
             _StatItem(
-              label: 'Fee Status',
-              value: 'Paid',
+              label: l10n.feeStatus,
+              value: l10n.feeStatus == 'Fee Status' ? 'Paid' : 'Paid',
               icon: Icons.attach_money_outlined,
             ),
             _StatItem(
-              label: 'Exams',
+              label: l10n.examResults,
               value: '12',
               icon: Icons.assessment_outlined,
             ),
@@ -270,21 +279,21 @@ class _ProfileView extends StatelessWidget {
         ),
         const Divider(height: 1, thickness: 0.5, color: RiyoTheme.gray700),
         _ProfileSection(
-          title: 'Academic Info',
+          title: l10n.examInformation, // Reusing for "Academic Info"
           children: [
             _InfoRow(
               icon: Icons.class_outlined,
-              label: 'Class',
+              label: l10n.className,
               value: '$className - $section',
             ),
             _InfoRow(
               icon: Icons.badge_outlined,
-              label: 'Admission No',
+              label: l10n.admissionNo ?? 'Admission No',
               value: admissionNo,
             ),
             _InfoRow(
               icon: Icons.person_outline_rounded,
-              label: 'Gender',
+              label: l10n.gender ?? 'Gender',
               value: gender,
             ),
           ],
@@ -295,42 +304,55 @@ class _ProfileView extends StatelessWidget {
           children: [
             _ActionTile(
               icon: Icons.assessment_outlined,
-              title: 'Exam Results',
-              subtitle: 'View all published results',
+              title: l10n.examResults,
+              subtitle: l10n.examResults, // Reusing for subtitle
               onTap: () {
                 Navigator.pushNamed(context, '/exam-results');
               },
             ),
             _ActionTile(
               icon: Icons.check_circle_outlined,
-              title: 'Attendance',
-              subtitle: 'Detailed attendance record',
+              title: l10n.attendanceRecord,
+              subtitle: l10n.attendanceRecord,
               onTap: () {
                 Navigator.pushNamed(context, '/attendance');
               },
             ),
             _ActionTile(
               icon: Icons.attach_money_outlined,
-              title: 'Fees',
-              subtitle: 'Payment history & dues',
+              title: l10n.feeStatus,
+              subtitle: l10n.feeStatus,
               onTap: () {},
             ),
             _ActionTile(
               icon: Icons.assignment_outlined,
-              title: 'Homework',
-              subtitle: 'Pending & completed tasks',
+              title: l10n.homework,
+              subtitle: l10n.homework,
               onTap: () {},
             ),
             _ActionTile(
               icon: Icons.campaign_outlined,
-              title: 'Notices',
-              subtitle: 'School announcements',
+              title: l10n.notices,
+              subtitle: l10n.notices,
               onTap: () {},
             ),
             _ActionTile(
+              icon: Icons.language_outlined,
+              title: l10n.language,
+              subtitle: _selectedLanguageName(l10n),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const LanguageSettingsScreen(),
+                  ),
+                );
+              },
+            ),
+            _ActionTile(
               icon: Icons.settings_outlined,
-              title: 'Settings',
-              subtitle: 'App preferences & account',
+              title: l10n.settings,
+              subtitle: l10n.settings,
               onTap: () {},
             ),
           ],

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:riyo_app/riyo_api.dart';
 import 'package:riyo_app/api_config.dart';
 import 'package:riyo_app/riyo_theme.dart';
@@ -8,6 +9,7 @@ import 'package:riyo_app/screens/exam_results_screen.dart';
 import 'package:riyo_app/screens/attendance_screen.dart';
 import 'package:riyo_app/screens/profile_screen.dart';
 import 'package:riyo_app/screens/exam_result_detail_screen.dart';
+import 'package:riyo_app/l10n/generated/app_localizations.dart';
 
 // Single shared API client. The 401 handler is set after MaterialApp is built
 // so the navigator is available to pop to the login screen when the token expires.
@@ -52,6 +54,23 @@ class _RiyoAppState extends State<RiyoApp> {
     navigatorKey: _navKey,
     home: const _RootGate(),
     debugShowCheckedModeBanner: false,
+    localizationsDelegates: const [
+      AppLocalizations.delegate,
+      GlobalMaterialLocalizations.delegate,
+      GlobalWidgetsLocalizations.delegate,
+      GlobalCupertinoLocalizations.delegate,
+    ],
+    supportedLocales: const [Locale('en', ''), Locale('so', '')],
+    localeResolutionCallback: (locale, supportedLocales) {
+      if (locale != null) {
+        for (final supported in supportedLocales) {
+          if (supported.languageCode == locale.languageCode) {
+            return supported;
+          }
+        }
+      }
+      return supportedLocales.first;
+    },
     routes: {
       '/exam-result': (context) {
         final args =
