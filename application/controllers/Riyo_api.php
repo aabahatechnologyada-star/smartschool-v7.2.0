@@ -375,6 +375,46 @@ class Riyo_api extends CI_Controller
                     if ($sub['get_marks'] !== null) { $total_get += $sub['get_marks']; $has_marks = true; }
                 }
                 $pct = ($has_marks && $total_max > 0) ? round($total_get / $total_max * 100, 1) : null;
+                
+                // Calculate rank for this student in this exam group
+                $rank = 1;
+                if ($pct !== null) {
+                    // Get all students in this exam group (egcbe_id) with their total marks
+                    $this->db->select('egcbse.id as exam_student_id');
+                    $this->db->from('exam_group_class_batch_exam_students egcbse');
+                    $this->db->where('egcbse.exam_group_class_batch_exams_id', $e['egcbe_id']);
+                    $all_students = $this->db->get()->result_array();
+                    
+                    $student_percentages = array();
+                    foreach ($all_students as $stud) {
+                        // Calculate total marks for each student in this exam group
+                        $this->db->select('egcbes.subject_id, egcbes.max_marks, r.get_marks');
+                        $this->db->from('exam_group_class_batch_exam_subjects egcbes');
+                        $this->db->join('exam_group_exam_results r', 'r.exam_group_class_batch_exam_subject_id = egcbes.id AND r.exam_group_class_batch_exam_student_id = ' . (int)$stud['exam_student_id'], 'left');
+                        $this->db->where('egcbes.exam_group_class_batch_exams_id', $e['egcbe_id']);
+                        $stud_subjects = $this->db->get()->result_array();
+                        
+                        $stud_total_max = 0; $stud_total_get = 0; $stud_has_marks = false;
+                        foreach ($stud_subjects as &$ssub) {
+                            $ssub['max_marks'] = is_numeric($ssub['max_marks']) ? (float)$ssub['max_marks'] : null;
+                            $ssub['get_marks'] = is_numeric($ssub['get_marks']) ? (float)$ssub['get_marks'] : null;
+                            if ($ssub['max_marks'] !== null) $stud_total_max += $ssub['max_marks'];
+                            if ($ssub['get_marks'] !== null) { $stud_total_get += $ssub['get_marks']; $stud_has_marks = true; }
+                        }
+                        if ($stud_has_marks && $stud_total_max > 0) {
+                            $stud_pct = round($stud_total_get / $stud_total_max * 100, 1);
+                            $student_percentages[] = $stud_pct;
+                        }
+                    }
+                    
+                    // Sort descending and find rank
+                    rsort($student_percentages);
+                    foreach ($student_percentages as $i => $sp) {
+                        if ($sp > $pct) $rank++;
+                        else break;
+                    }
+                }
+                
                 $groups[] = array(
                     'exam_group' => $e['exam_group_name'],
                     'subjects' => $subjects,
@@ -382,6 +422,8 @@ class Riyo_api extends CI_Controller
                     'total_get' => $has_marks ? $total_get : null,
                     'percentage' => $pct === null ? null : (string)$pct, // clean "80.4"
                     'grade' => $pct === null ? null : $this->grade_for($pct),
+                    'rank' => $rank,
+                    'total_students' => count($student_percentages) ?? 0,
                 );
             }
 
