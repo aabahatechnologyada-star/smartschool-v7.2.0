@@ -9,23 +9,32 @@
  *   /riyo_api/fees       ?token=... -> fee summary (expected/paid/balance)
  *   /riyo_api/notices    ?token=... -> school notices
  *   /riyo_api/dashboard  ?token=... -> quick summary
+ *   /riyo_api/changepassword       -> POST current_password,new_password,confirm_password
  * Auth: bearer-style token stored in riyo_api_tokens (user_id, expires_at).
+ * Rate Limiting: IP-based for login, token-based for authenticated endpoints.
  */
 class Riyo_api extends CI_Controller
 {
     private $SECRET = 'riyo_app_2025'; // app<->server shared secret (change in production)
     private $TOKEN_TTL = 86400;        // 24h
+    
+    // Rate limiting configuration
+    private $LOGIN_RATE_LIMIT = 5;     // 5 requests
+    private $LOGIN_WINDOW = 60;        // per 60 seconds
+    private $API_RATE_LIMIT = 60;      // 60 requests
+    private $API_WINDOW = 60;          // per 60 seconds
 
     public function __construct()
     {
         parent::__construct();
         $this->load->database();
         $this->load->library('enc_lib');
-        $this->setup_table();
+        $this->setup_tables();
     }
 
-    private function setup_table()
+    private function setup_tables()
     {
+        // Token table
         if (!$this->db->table_exists('riyo_api_tokens')) {
             $this->db->query("CREATE TABLE riyo_api_tokens (
                 id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -34,6 +43,19 @@ class Riyo_api extends CI_Controller
                 expires_at DATETIME NOT NULL,
                 created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
                 KEY (api_token)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+        }
+
+        // Rate limit table for login (IP-based)
+        if (!$this->db->table_exists('riyo_api_rate_limits')) {
+            $this->db->query("CREATE TABLE riyo_api_rate_limits (
+                id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+                identifier VARCHAR(100) NOT NULL,  // IP address or user_id
+                endpoint VARCHAR(50) NOT NULL,     // 'login', 'api', 'changepassword'
+                request_count INT NOT NULL DEFAULT 1,
+                window_start TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                UNIQUE KEY unique_limit (identifier, endpoint),
+                KEY (window_start)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
         }
     }
@@ -46,6 +68,66 @@ class Riyo_api extends CI_Controller
             ->set_output(json_encode($data, JSON_UNESCAPED_UNICODE));
     }
 
+    private function get_client_ip()
+    {
+        // Check for forwarded IP (behind proxy/load balancer)
+        $ip = $this->input->server('HTTP_X_FORWARDED_FOR');
+        if ($ip) {
+            $ips = explode(',', $ip);
+            return trim($ips[0]);
+        }
+        return $this->input->ip_address();
+    }
+
+    /**
+     * Check and increment rate limit
+     * @param string $identifier IP address or user_id
+     * @param string $endpoint 'login' | 'api' | 'changepassword'
+     * @param int $max_requests Maximum requests allowed
+     * @param int $window_seconds Time window in seconds
+     * @return array|null Returns error array if rate limited, null if OK
+     */
+    private function check_rate_limit($identifier, $endpoint, $max_requests, $window_seconds)
+    {
+        $now = time();
+        $window_start = date('Y-m-d H:i:s', $now - $window_seconds);
+
+        // Clean old entries
+        $this->db->where('window_start <', $window_start);
+        $this->db->delete('riyo_api_rate_limits');
+
+        // Check current count
+        $row = $this->db->get_where('riyo_api_rate_limits', array(
+            'identifier' => $identifier,
+            'endpoint' => $endpoint
+        ))->row();
+
+        if ($row) {
+            if ($row->request_count >= $max_requests) {
+                $retry_after = $window_seconds - ($now - strtotime($row->window_start));
+                return array(
+                    'status' => 'error',
+                    'message' => 'Too many requests. Please try again later.',
+                    'retry_after' => max(1, $retry_after)
+                );
+            }
+            // Increment
+            $this->db->where('identifier', $identifier);
+            $this->db->where('endpoint', $endpoint);
+            $this->db->set('request_count', 'request_count + 1', FALSE);
+            $this->db->update('riyo_api_rate_limits');
+        } else {
+            // Insert new
+            $this->db->insert('riyo_api_rate_limits', array(
+                'identifier' => $identifier,
+                'endpoint' => $endpoint,
+                'request_count' => 1,
+                'window_start' => date('Y-m-d H:i:s', $now)
+            ));
+        }
+        return null;
+    }
+
     private function auth()
     {
         $token = $this->input->get_post('token') ?: $this->input->get_request_header('Authorization', TRUE);
@@ -53,7 +135,10 @@ class Riyo_api extends CI_Controller
         if (!$token) return false;
         $row = $this->db->get_where('riyo_api_tokens', array('api_token' => $token))->row();
         if (!$row) return false;
-        if (strtotime($row->expires_at) < time()) { $this->db->delete('riyo_api_tokens', array('id' => $row->id)); return false; }
+        if (strtotime($row->expires_at) < time()) { 
+            $this->db->delete('riyo_api_tokens', array('id' => $row->id)); 
+            return false; 
+        }
         return (int)$row->user_id;
     }
 
@@ -70,13 +155,24 @@ class Riyo_api extends CI_Controller
 
     public function login()
     {
+        // Rate limiting: 5 requests per minute per IP
+        $ip = $this->get_client_ip();
+        $rate_limit_error = $this->check_rate_limit($ip, 'login', $this->LOGIN_RATE_LIMIT, $this->LOGIN_WINDOW);
+        if ($rate_limit_error) {
+            return $this->json($rate_limit_error, 429);
+        }
+
         $username = $this->input->post('username');
         $password = $this->input->post('password');
-        if (!$username || !$password) { return $this->json(array('status' => 'error', 'message' => 'username and password required'), 400); }
+        if (!$username || !$password) { 
+            return $this->json(array('status' => 'error', 'message' => 'username and password required'), 400); 
+        }
 
         $this->db->where('username', $username);
         $user = $this->db->get('users')->row();
-        if (!$user) { return $this->json(array('status' => 'error', 'message' => 'Invalid credentials'), 401); }
+        if (!$user) { 
+            return $this->json(array('status' => 'error', 'message' => 'Invalid credentials'), 401); 
+        }
         if ($user->role != 'student' && $user->role != 'parent') {
             return $this->json(array('status' => 'error', 'message' => 'This app is for students/parents only'), 403);
         }
@@ -86,7 +182,9 @@ class Riyo_api extends CI_Controller
         }
 
         $student = $this->student_by_user($user->user_id);
-        if (!$student) { return $this->json(array('status' => 'error', 'message' => 'No student linked to this account'), 404); }
+        if (!$student) { 
+            return $this->json(array('status' => 'error', 'message' => 'No student linked to this account'), 404); 
+        }
 
         // issue token
         $this->db->delete('riyo_api_tokens', array('user_id' => $user->user_id));
@@ -124,10 +222,24 @@ class Riyo_api extends CI_Controller
         );
     }
 
+    private function rate_limit_authenticated($uid)
+    {
+        $rate_limit_error = $this->check_rate_limit((string)$uid, 'api', $this->API_RATE_LIMIT, $this->API_WINDOW);
+        if ($rate_limit_error) {
+            return $this->json($rate_limit_error, 429);
+        }
+        return null;
+    }
+
     public function profile()
     {
         $uid = $this->auth();
         if (!$uid) return $this->json(array('status' => 'error', 'message' => 'unauthorized'), 401);
+        
+        // Rate limit: 60 requests per minute per user
+        $rate_limit_error = $this->rate_limit_authenticated($uid);
+        if ($rate_limit_error) return $rate_limit_error;
+
         $s = $this->student_by_user($uid);
         if (!$s) return $this->json(array('status' => 'error', 'message' => 'not found'), 404);
         $this->json(array('status' => 'success', 'student' => $this->public_student($s)));
@@ -137,6 +249,10 @@ class Riyo_api extends CI_Controller
     {
         $uid = $this->auth();
         if (!$uid) return $this->json(array('status' => 'error', 'message' => 'unauthorized'), 401);
+        
+        $rate_limit_error = $this->rate_limit_authenticated($uid);
+        if ($rate_limit_error) return $rate_limit_error;
+
         $s = $this->student_by_user($uid);
         if (!$s) return $this->json(array('status' => 'error', 'message' => 'not found'), 404);
         $ss = $this->db->get_where('student_session', array('student_id' => $s->id, 'is_active' => 'yes'))->row();
@@ -156,6 +272,10 @@ class Riyo_api extends CI_Controller
     {
         $uid = $this->auth();
         if (!$uid) return $this->json(array('status' => 'error', 'message' => 'unauthorized'), 401);
+        
+        $rate_limit_error = $this->rate_limit_authenticated($uid);
+        if ($rate_limit_error) return $rate_limit_error;
+
         $s = $this->student_by_user($uid);
         if (!$s) return $this->json(array('status' => 'error', 'message' => 'not found'), 404);
         $ss = $this->db->get_where('student_session', array('student_id' => $s->id, 'is_active' => 'yes'))->row();
@@ -184,6 +304,10 @@ class Riyo_api extends CI_Controller
     {
         $uid = $this->auth();
         if (!$uid) return $this->json(array('status' => 'error', 'message' => 'unauthorized'), 401);
+        
+        $rate_limit_error = $this->rate_limit_authenticated($uid);
+        if ($rate_limit_error) return $rate_limit_error;
+
         $this->db->select('title, message, publish_date, date');
         $this->db->from('send_notification');
         $this->db->where("visible_student IN ('Yes','yes','YES','1','true')", null, false);
@@ -205,6 +329,10 @@ class Riyo_api extends CI_Controller
     {
         $uid = $this->auth();
         if (!$uid) return $this->json(array('status' => 'error', 'message' => 'unauthorized'), 401);
+        
+        $rate_limit_error = $this->rate_limit_authenticated($uid);
+        if ($rate_limit_error) return $rate_limit_error;
+
         $s = $this->student_by_user($uid);
         if (!$s) return $this->json(array('status' => 'error', 'message' => 'not found'), 404);
 
@@ -282,6 +410,10 @@ class Riyo_api extends CI_Controller
     {
         $uid = $this->auth();
         if (!$uid) return $this->json(array('status' => 'error', 'message' => 'unauthorized'), 401);
+        
+        $rate_limit_error = $this->rate_limit_authenticated($uid);
+        if ($rate_limit_error) return $rate_limit_error;
+
         $s = $this->student_by_user($uid);
         if (!$s) return $this->json(array('status' => 'error', 'message' => 'not found'), 404);
         $ss = $this->db->get_where('student_session', array('student_id' => $s->id, 'is_active' => 'yes'))->row();
@@ -295,10 +427,18 @@ class Riyo_api extends CI_Controller
             'student' => $this->public_student($s),
             'attendance_records' => $att_count,
         ));
+    }
+
     public function changepassword()
     {
         $uid = $this->auth();
         if (!$uid) return $this->json(array('status' => 'error', 'message' => 'unauthorized'), 401);
+
+        // Rate limit: 5 requests per minute for password change
+        $rate_limit_error = $this->check_rate_limit((string)$uid, 'changepassword', 5, 60);
+        if ($rate_limit_error) {
+            return $this->json($rate_limit_error, 429);
+        }
 
         $current = $this->input->post('current_password');
         $new = $this->input->post('new_password');

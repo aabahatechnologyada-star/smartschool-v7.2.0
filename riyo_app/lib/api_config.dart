@@ -38,6 +38,8 @@ enum ApiError {
   unauthorized, // 401 — token missing/expired
   forbidden, // 403 — e.g. teacher tried to use student app
   notFound, // 404
+  // rate limiting
+  rateLimited, // 429 — too many requests
   // server
   serverError, // 5xx
   badRequest, // 400 with a message
@@ -65,6 +67,10 @@ String friendlyError(Object e) {
         return e.message.isNotEmpty
             ? e.message
             : 'The requested information was not found.';
+      case ApiError.rateLimited:
+        return e.message.isNotEmpty
+            ? e.message
+            : 'Too many requests. Please wait a moment and try again.';
       case ApiError.badRequest:
         return e.message.isNotEmpty ? e.message : 'The request was invalid.';
       case ApiError.serverError:

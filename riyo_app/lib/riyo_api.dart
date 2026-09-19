@@ -227,6 +227,7 @@ class RiyoApi {
     if (s == 403) return ApiError.forbidden;
     if (s == 404) return ApiError.notFound;
     if (s == 400) return ApiError.badRequest;
+    if (s == 429) return ApiError.rateLimited;
     if (s >= 500) return ApiError.serverError;
     return ApiError.unknown;
   }
@@ -234,6 +235,7 @@ class RiyoApi {
   ApiError _mapHttpAndMessage(int s, String msg) {
     if (s == 401 || msg.toLowerCase() == 'unauthorized')
       return ApiError.unauthorized;
+    if (s == 429) return ApiError.rateLimited;
     return _mapHttp(s);
   }
 
