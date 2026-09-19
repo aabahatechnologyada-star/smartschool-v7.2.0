@@ -276,6 +276,28 @@ class RiyoApi {
     return body;
   }
 
+  Future<Map<String, dynamic>> changePassword({
+    required String currentPassword,
+    required String newPassword,
+    required String confirmPassword,
+  }) async {
+    if (!_warmed) await _warmup();
+    final body = await _request(
+      'POST',
+      '/riyo_api/changepassword',
+      body: {
+        'current_password': currentPassword,
+        'new_password': newPassword,
+        'confirm_password': confirmPassword,
+      },
+    );
+    // Password changed successfully - token is now invalid, clear it
+    if (body['status'] == 'success') {
+      await clearToken();
+    }
+    return body;
+  }
+
   Future<Map<String, dynamic>> profile() async => _get('/riyo_api/profile');
   Future<Map<String, dynamic>> attendance([String? month]) async => _get(
     '/riyo_api/attendance',

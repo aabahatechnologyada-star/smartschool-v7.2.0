@@ -350,6 +350,14 @@ class _ProfileView extends StatelessWidget {
               },
             ),
             _ActionTile(
+              icon: Icons.lock_outlined,
+              title: 'Change Password',
+              subtitle: 'Update your password',
+              onTap: () {
+                Navigator.pushNamed(context, '/change-password');
+              },
+            ),
+            _ActionTile(
               icon: Icons.settings_outlined,
               title: l10n.settings,
               subtitle: l10n.settings,

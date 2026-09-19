@@ -63,5 +63,15 @@
   "save": "Keydin",
   "more": "Wax Ka Badan",
   "tapForDetails": "Dabagaan Wixii Xeelad",
-  "moreSubjects": "mawduucyo badan"
+  "moreSubjects": "mawduucyo badan",
+  "changePassword": "Bedel Ereyga Sirta",
+  "currentPassword": "Ereyga Sirta Halkan Jira",
+  "newPassword": "Ereyga Sirta Cusub",
+  "confirmPassword": "Hubi Ereyga Sirta",
+  "passwordTooShort": "Ereyga sirta wuxuu u baahan yahay inuu ugu yaraan 6 xaraf ah",
+  "passwordsDoNotMatch": "Ereyga sirta ma khamiin",
+  "currentPasswordIncorrect": "Ereyga sirta halkan jira khaldan",
+  "passwordChangedSuccess": "Ereyga sirta waa la beddelay. Fadlan dib u geli.",
+  "allFieldsRequired": "Meelaha oo dhan waa loo baahnaa",
+  "passwordsMustMatch": "Ereyga sirta waa inay khamiin"
 }

@@ -295,5 +295,38 @@ class Riyo_api extends CI_Controller
             'student' => $this->public_student($s),
             'attendance_records' => $att_count,
         ));
+    public function changepassword()
+    {
+        $uid = $this->auth();
+        if (!$uid) return $this->json(array('status' => 'error', 'message' => 'unauthorized'), 401);
+
+        $current = $this->input->post('current_password');
+        $new = $this->input->post('new_password');
+        $confirm = $this->input->post('confirm_password');
+
+        if (!$current || !$new || !$confirm) {
+            return $this->json(array('status' => 'error', 'message' => 'All fields required'), 400);
+        }
+        if ($new !== $confirm) {
+            return $this->json(array('status' => 'error', 'message' => 'Passwords do not match'), 400);
+        }
+        if (strlen($new) < 6) {
+            return $this->json(array('status' => 'error', 'message' => 'Password too short (min 6 chars)'), 400);
+        }
+
+        // Verify current password
+        $user = $this->db->get_where('users', array('user_id' => $uid))->row();
+        if (!$user || $user->password !== $current) {
+            return $this->json(array('status' => 'error', 'message' => 'Current password incorrect'), 401);
+        }
+
+        // Update password (plaintext like existing login)
+        $this->db->where('user_id', $uid);
+        $this->db->update('users', array('password' => $new));
+
+        // Invalidate all tokens for security
+        $this->db->delete('riyo_api_tokens', array('user_id' => $uid));
+
+        $this->json(array('status' => 'success', 'message' => 'Password changed successfully. Please log in again.'));
     }
 }

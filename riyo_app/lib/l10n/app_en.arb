@@ -63,5 +63,15 @@
   "save": "Save",
   "more": "More",
   "tapForDetails": "Tap for full details",
-  "moreSubjects": "more subjects"
+  "moreSubjects": "more subjects",
+  "changePassword": "Change Password",
+  "currentPassword": "Current Password",
+  "newPassword": "New Password",
+  "confirmPassword": "Confirm Password",
+  "passwordTooShort": "Password must be at least 6 characters",
+  "passwordsDoNotMatch": "Passwords do not match",
+  "currentPasswordIncorrect": "Current password incorrect",
+  "passwordChangedSuccess": "Password changed successfully. Please log in again.",
+  "allFieldsRequired": "All fields required",
+  "passwordsMustMatch": "Passwords must match"
 }
