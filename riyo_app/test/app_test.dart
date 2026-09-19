@@ -49,6 +49,28 @@ void main() {
       expect(body['token'], 'test-token-123');
     });
 
+    test('changePassword endpoint returns success', () async {
+      final mockClient = MockClient((request) async {
+        if (request.url.path == '/riyo_api/changepassword' && request.method == 'POST') {
+          return http.Response(
+            jsonEncode({'status': 'success', 'message': 'Password changed successfully'}),
+            200,
+            headers: {'content-type': 'application/json'},
+          );
+        }
+        return http.Response('Not Found', 404);
+      });
+
+      final response = await mockClient.post(
+        Uri.parse('http://localhost/riyo_api/changepassword'),
+        body: {'current_password': 'old', 'new_password': 'newpass', 'confirm_password': 'newpass'},
+      );
+
+      expect(response.statusCode, 200);
+      final body = jsonDecode(response.body);
+      expect(body['status'], 'success');
+    });
+
     test('handles network error', () async {
       final mockClient = MockClient((request) {
         throw Exception('Network error');
@@ -111,4 +133,16 @@ void main() {
       expect(mapHttp(418), ApiError.unknown);
     });
   });
+}
+
+enum ApiError {
+  noNetwork,
+  timeout,
+  unauthorized,
+  forbidden,
+  notFound,
+  serverError,
+  badRequest,
+  invalidResponse,
+  unknown,
 }
