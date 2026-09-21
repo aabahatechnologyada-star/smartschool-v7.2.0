@@ -7,6 +7,7 @@ on:
       - 'riyo_app/**'
       - '.github/workflows/build_app.yml'
   pull_request:
+    branches: [main]
     paths:
       - 'riyo_app/**'
   workflow_dispatch:
@@ -37,7 +38,7 @@ jobs:
       # then restore our lib/assets/pubspec.
       - name: Stash app sources
         run: |
-          mv lib /tmp/_lib && mv assets /tmp/_assets && mv pubspec.yaml /tmp/_pubspec.yaml || true
+          mv lib /tmp/_lib && mv assets /tmp/_assets && mv pubspec.yaml /tmp/_pubspec.yaml && mv l10n.yaml /tmp/_l10n.yaml || true
           ls -la
 
       - name: Generate Android project
@@ -48,6 +49,7 @@ jobs:
           rm -rf lib && mv /tmp/_lib ./lib
           rm -rf assets && mv /tmp/_assets ./assets
           rm -f pubspec.yaml && mv /tmp/_pubspec.yaml ./pubspec.yaml
+          rm -f l10n.yaml && mv /tmp/_l10n.yaml ./l10n.yaml || true
           ls -la
 
       - name: Remove generated test/ and README.md (we have our own; the default test references a non-existent MyApp)
@@ -125,7 +127,7 @@ jobs:
 
       - name: Stash app sources
         run: |
-          mv lib /tmp/_lib && mv assets /tmp/_assets && mv pubspec.yaml /tmp/_pubspec.yaml || true
+          mv lib /tmp/_lib && mv assets /tmp/_assets && mv pubspec.yaml /tmp/_pubspec.yaml && mv l10n.yaml /tmp/_l10n.yaml || true
 
       - name: Generate iOS project
         run: flutter create --platforms=ios --org=com.riyo --project-name=riyo_app .
@@ -135,6 +137,7 @@ jobs:
           rm -rf lib && mv /tmp/_lib ./lib
           rm -rf assets && mv /tmp/_assets ./assets
           rm -f pubspec.yaml && mv /tmp/_pubspec.yaml ./pubspec.yaml
+          rm -f l10n.yaml && mv /tmp/_l10n.yaml ./l10n.yaml || true
 
       - name: Remove generated test/ and README.md
         run: rm -rf test README.md || true
