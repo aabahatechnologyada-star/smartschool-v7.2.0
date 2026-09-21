@@ -364,7 +364,7 @@ class RiyoTheme {
       activeTrackColor: white,
       inactiveTrackColor: gray700,
       thumbColor: white,
-      overlayColor: white.withValues(alpha: 0.12),
+      overlayColor: white.withOpacity(0.12),
       valueIndicatorColor: white,
       valueIndicatorTextStyle: labelSmall.copyWith(color: black),
     ),
@@ -375,7 +375,7 @@ class RiyoTheme {
       }),
       trackColor: WidgetStateProperty.resolveWith((states) {
         if (states.contains(WidgetState.selected))
-          return white.withValues(alpha: 0.5);
+          return white.withOpacity(0.5);
         return gray700;
       }),
       trackOutlineColor: WidgetStateProperty.all(Colors.transparent),

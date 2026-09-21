@@ -289,10 +289,10 @@ class _ExamResultDetailScreenState extends State<ExamResultDetailScreen> {
               vertical: RiyoTheme.space2,
             ),
             decoration: BoxDecoration(
-              color: _gradeColor(grade).withValues(alpha: 0.15),
+              color: _gradeColor(grade).withOpacity(0.15),
               borderRadius: BorderRadius.circular(RiyoTheme.radiusFull),
               border: Border.all(
-                color: _gradeColor(grade).withValues(alpha: 0.3),
+                color: _gradeColor(grade).withOpacity(0.3),
                 width: 1,
               ),
             ),
@@ -382,7 +382,7 @@ class _ExamResultDetailScreenState extends State<ExamResultDetailScreen> {
         color: RiyoTheme.gray900,
         borderRadius: BorderRadius.circular(RiyoTheme.radiusLg),
         border: Border.all(
-          color: RiyoTheme.gray700.withValues(alpha: 0.5),
+          color: RiyoTheme.gray700.withOpacity(0.5),
           width: 0.5,
         ),
       ),
@@ -628,10 +628,10 @@ class _SubjectTile extends StatelessWidget {
                     vertical: RiyoTheme.space1,
                   ),
                   decoration: BoxDecoration(
-                    color: gradeColor.withValues(alpha: 0.15),
+                    color: gradeColor.withOpacity(0.15),
                     borderRadius: BorderRadius.circular(RiyoTheme.radiusFull),
                     border: Border.all(
-                      color: gradeColor.withValues(alpha: 0.3),
+                      color: gradeColor.withOpacity(0.3),
                       width: 1,
                     ),
                   ),

@@ -78,7 +78,7 @@ class _ShimmerEffectState extends State<_ShimmerEffect>
                 end: Alignment.centerRight,
                 colors: [
                   RiyoTheme.gray800,
-                  RiyoTheme.gray700.withValues(alpha: _animation.value),
+                  RiyoTheme.gray700.withOpacity(_animation.value),
                   RiyoTheme.gray800,
                 ],
                 stops: const [0.0, 0.5, 1.0],
