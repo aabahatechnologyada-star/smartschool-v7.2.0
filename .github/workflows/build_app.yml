@@ -7,7 +7,6 @@ on:
       - 'riyo_app/**'
       - '.github/workflows/build_app.yml'
   pull_request:
-    branches: [main]
     paths:
       - 'riyo_app/**'
   workflow_dispatch:
