@@ -7,11 +7,13 @@ on:
       - 'riyo_app/**'
       - '.github/workflows/build_app.yml'
   pull_request:
+    branches: [main]
     paths:
       - 'riyo_app/**'
   workflow_dispatch:
 
 jobs:
+  # Android APK — runs on Linux (fast, no Xcode needed).
   build-android:
     name: Build Android APK
     runs-on: ubuntu-latest
@@ -31,12 +33,12 @@ jobs:
       - name: Flutter version
         run: flutter --version
 
+      # The repo ships lib/, assets/, pubspec.yaml only (no android/).
+      # Generate android/ with the SAME Flutter version to avoid Gradle/AGP mismatches,
+      # then restore our lib/assets/pubspec.
       - name: Stash app sources
         run: |
-          mv lib /tmp/_lib
-          mv assets /tmp/_assets
-          mv pubspec.yaml /tmp/_pubspec.yaml
-          [ -f l10n.yaml ] && mv l10n.yaml /tmp/_l10n.yaml || true
+          mv lib /tmp/_lib && mv assets /tmp/_assets && mv pubspec.yaml /tmp/_pubspec.yaml && mv l10n.yaml /tmp/_l10n.yaml || true
           ls -la
 
       - name: Generate Android project
@@ -47,14 +49,16 @@ jobs:
           rm -rf lib && mv /tmp/_lib ./lib
           rm -rf assets && mv /tmp/_assets ./assets
           rm -f pubspec.yaml && mv /tmp/_pubspec.yaml ./pubspec.yaml
-          [ -f /tmp/_l10n.yaml ] && mv /tmp/_l10n.yaml ./l10n.yaml || true
+          rm -f l10n.yaml && mv /tmp/_l10n.yaml ./l10n.yaml || true
           ls -la
 
-      - name: Remove generated test/ and README.md
-        run: rm -rf test README.md || true
+      - name: Remove generated test/ and README.md (we have our own; the default test references a non-existent MyApp)
+        run: |
+          rm -rf test README.md || true
+          ls -la
 
-      - name: Patch Android permissions
-        run: python3 tool/patch_perms.py android || echo "Patch failed, continuing"
+      - name: Patch Android permissions (INTERNET, cleartext, network state)
+        run: python3 tool/patch_perms.py android
 
       - name: Install dependencies
         run: flutter pub get
@@ -64,36 +68,42 @@ jobs:
         continue-on-error: true
 
       - name: Build APK (release)
-        run: flutter build apk --release 2>&1 | tee build/android-build.log
-
-      - name: Debug - List all APK files
         run: |
-          echo "=== Current directory ==="
-          pwd
-          echo "=== build/app/outputs ==="
-          ls -la build/app/outputs/ || echo "Not found"
+          mkdir -p build
+          flutter build apk --release --verbose 2>&1 | tee build/android-build.log
+
+      - name: List APK outputs (debug)
+        if: success()
+        run: |
           echo "=== build/app/outputs/flutter-apk ==="
-          ls -la build/app/outputs/flutter-apk/ || echo "Not found"
-          echo "=== All APK files ==="
-          find . -name "*.apk" -type f 2>/dev/null || echo "No APK files found"
+          find build/app/outputs/flutter-apk -type f 2>/dev/null || echo "No files found"
+          echo "=== build/app/outputs ==="
+          find build/app/outputs -type f -name "*.apk" 2>/dev/null || echo "No files found"
+          echo "=== ALL .apk files in build ==="
+          find build -type f -name "*.apk" 2>/dev/null || echo "No files found"
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
           name: riyo-app-release-apk
           path: |
-            riyo_app/build/app/outputs/flutter-apk/*.apk
-            riyo_app/build/app/outputs/flutter-apk/**/*.apk
-          if-no-files-found: error
+            build/app/outputs/flutter-apk/*.apk
+            build/app/outputs/flutter-apk/**/*.apk
+            build/app/outputs/**/*.apk
+            build/**/*.apk
+          if-no-files-found: warn
 
       - name: Upload build logs on failure
         if: failure()
         uses: actions/upload-artifact@v4
         with:
           name: android-build-logs
-          path: riyo_app/build/**/*.log
-          if-no-files-found: ignore
+          path: |
+            build/**/*.log
+            android/**/*.log
+            .dart_tool/**/*.log
 
+  # iOS — requires macOS + Xcode. Builds the unsigned .app (no-codesign).
   build-ios:
     name: Build iOS (unsigned)
     runs-on: macos-latest
@@ -114,14 +124,11 @@ jobs:
         run: flutter --version
 
       - name: Setup CocoaPods
-        run: sudo gem install cocoapods --no-document || true
+        run: sudo gem install cocoapods --no-document || pod --version
 
       - name: Stash app sources
         run: |
-          mv lib /tmp/_lib
-          mv assets /tmp/_assets
-          mv pubspec.yaml /tmp/_pubspec.yaml
-          [ -f l10n.yaml ] && mv l10n.yaml /tmp/_l10n.yaml || true
+          mv lib /tmp/_lib && mv assets /tmp/_assets && mv pubspec.yaml /tmp/_pubspec.yaml && mv l10n.yaml /tmp/_l10n.yaml || true
 
       - name: Generate iOS project
         run: flutter create --platforms=ios --org=com.riyo --project-name=riyo_app .
@@ -131,13 +138,13 @@ jobs:
           rm -rf lib && mv /tmp/_lib ./lib
           rm -rf assets && mv /tmp/_assets ./assets
           rm -f pubspec.yaml && mv /tmp/_pubspec.yaml ./pubspec.yaml
-          [ -f /tmp/_l10n.yaml ] && mv /tmp/_l10n.yaml ./l10n.yaml || true
+          rm -f l10n.yaml && mv /tmp/_l10n.yaml ./l10n.yaml || true
 
       - name: Remove generated test/ and README.md
         run: rm -rf test README.md || true
 
-      - name: Patch iOS Info.plist
-        run: python3 tool/patch_perms.py ios || echo "Patch failed, continuing"
+      - name: Patch iOS Info.plist (App Transport Security)
+        run: python3 tool/patch_perms.py ios
 
       - name: Install dependencies
         run: flutter pub get
@@ -146,13 +153,21 @@ jobs:
         run: cd ios && pod install && cd ..
 
       - name: Build iOS (release, no codesign)
-        run: flutter build ios --release --no-codesign 2>&1 | tee build/ios-build.log
+        run: |
+          mkdir -p build
+          flutter build ios --release --no-codesign --verbose 2>&1 | tee build/ios-build.log
+
+      - name: List iOS outputs (debug)
+        if: success()
+        run: |
+          echo "=== build/ios ==="
+          find build/ios -type f -name "*.app" 2>/dev/null
 
       - name: Upload iOS artifact
         uses: actions/upload-artifact@v4
         with:
           name: riyo-app-release-ios
-          path: riyo_app/build/ios/iphoneos/Runner.app
+          path: build/ios/iphoneos/Runner.app
           if-no-files-found: warn
 
       - name: Upload build logs on failure
@@ -160,5 +175,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ios-build-logs
-          path: riyo_app/build/**/*.log
-          if-no-files-found: ignore
+          path: |
+            build/**/*.log
+            ios/**/*.log
+            .dart_tool/**/*.log

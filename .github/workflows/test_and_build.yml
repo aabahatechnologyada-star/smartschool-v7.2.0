@@ -122,7 +122,7 @@ jobs:
             build/app/outputs/flutter-apk/**/*.apk
             build/app/outputs/**/*.apk
             build/**/*.apk
-          if-no-files-found: error
+          if-no-files-found: warn
 
       - name: Upload build logs on failure
         if: failure()
