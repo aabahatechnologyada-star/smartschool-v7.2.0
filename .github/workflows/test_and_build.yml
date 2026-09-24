@@ -99,30 +99,24 @@ jobs:
       - name: Build APK (release)
         run: |
           mkdir -p build
-          flutter build apk --release --verbose 2>&1 | tee build/android-build.log
+          flutter build apk --release 2>&1 | tee build/android-build.log
 
-      - name: List APK outputs (debug)
+      - name: Debug APK paths
         if: success()
         run: |
-          echo "=== build/app/outputs/flutter-apk ==="
-          find build/app/outputs/flutter-apk -type f 2>/dev/null || echo "No files found"
-          echo "=== build/app/outputs ==="
-          find build/app/outputs -type f 2>/dev/null || echo "No files found"
-          echo "=== ALL files in build ==="
-          find build -type f 2>/dev/null | head -50 || echo "No files found"
+          echo "=== Debug APK paths from repo root ==="
+          find riyo_app/build -name "*.apk" -type f 2>/dev/null || echo "No APKs found"
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
           name: riyo-app-release-apk
           path: |
-            build/app/outputs/flutter-apk/arm64-v8a/release/*.apk
-            build/app/outputs/flutter-apk/armeabi-v7a/release/*.apk
-            build/app/outputs/flutter-apk/x86_64/release/*.apk
-            build/app/outputs/flutter-apk/**/*.apk
-            build/app/outputs/**/*.apk
-            build/**/*.apk
-          if-no-files-found: warn
+            riyo_app/build/app/outputs/flutter-apk/*.apk
+            riyo_app/build/app/outputs/flutter-apk/**/*.apk
+            riyo_app/build/app/outputs/**/*.apk
+            riyo_app/build/**/*.apk
+          if-no-files-found: error
 
       - name: Upload build logs on failure
         if: failure()
@@ -130,9 +124,9 @@ jobs:
         with:
           name: android-build-logs
           path: |
-            build/**/*.log
-            android/**/*.log
-            .dart_tool/**/*.log
+            riyo_app/build/**/*.log
+            riyo_app/android/**/*.log
+            riyo_app/.dart_tool/**/*.log
 
   # iOS
   build-ios:
@@ -193,19 +187,19 @@ jobs:
       - name: Build iOS (release, no codesign)
         run: |
           mkdir -p build
-          flutter build ios --release --no-codesign --verbose 2>&1 | tee build/ios-build.log
+          flutter build ios --release --no-codesign 2>&1 | tee build/ios-build.log
 
       - name: List iOS outputs (debug)
         if: success()
         run: |
           echo "=== build/ios ==="
-          find build/ios -type f -name "*.app" 2>/dev/null
+          find riyo_app/build/ios -type f -name "*.app" 2>/dev/null || echo "No .app found"
 
       - name: Upload iOS artifact
         uses: actions/upload-artifact@v4
         with:
           name: riyo-app-release-ios
-          path: build/ios/iphoneos/Runner.app
+          path: riyo_app/build/ios/iphoneos/Runner.app
           if-no-files-found: warn
 
       - name: Upload build logs on failure
@@ -214,6 +208,6 @@ jobs:
         with:
           name: ios-build-logs
           path: |
-            build/**/*.log
-            ios/**/*.log
-            .dart_tool/**/*.log
+            riyo_app/build/**/*.log
+            riyo_app/ios/**/*.log
+            riyo_app/.dart_tool/**/*.log
