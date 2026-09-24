@@ -58,7 +58,7 @@ jobs:
           ls -la
 
       - name: Patch Android permissions (INTERNET, cleartext, network state)
-        run: python3 tool/patch_perms.py android
+        run: python3 tool/patch_perms.py android || true
 
       - name: Install dependencies
         run: flutter pub get
@@ -140,7 +140,7 @@ jobs:
         run: rm -rf test README.md || true
 
       - name: Patch iOS Info.plist (App Transport Security)
-        run: python3 tool/patch_perms.py ios
+        run: python3 tool/patch_perms.py ios || true
 
       - name: Install dependencies
         run: flutter pub get

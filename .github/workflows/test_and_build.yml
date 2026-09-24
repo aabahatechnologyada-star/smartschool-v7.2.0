@@ -42,7 +42,7 @@ jobs:
       - name: Upload coverage
         uses: codecov/codecov-action@v3
         with:
-          files: ./coverage/lcov.info
+          files: riyo_app/coverage/lcov.info
 
   # Android APK
   build-android:
@@ -82,6 +82,9 @@ jobs:
       - name: Remove generated test/ and README.md
         run: |
           rm -rf test README.md || true
+
+      - name: Patch Android permissions (INTERNET, cleartext, network state)
+        run: python3 tool/patch_perms.py android || true
 
       - name: Generate localizations
         run: flutter gen-l10n --verbose
