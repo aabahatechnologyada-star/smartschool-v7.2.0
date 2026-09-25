@@ -68,7 +68,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
           loading: _loading,
           error: _error,
           data: _attendance,
-          isEmpty: (d) => d == null || (d['records'] as List?)?.isEmpty ?? true,
+          isEmpty: (d) => d == null || ((d['records'] as List?)?.isEmpty ?? true),
           onRetry: _loadAttendance,
           skeleton: ListView.builder(
             padding: const EdgeInsets.only(top: RiyoTheme.space2),

@@ -221,7 +221,7 @@ class _FeedCard extends StatelessWidget {
           // Content
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: RiyoTheme.space4),
-            child: _buildContent(type),
+            child: _buildContent(context, type),
           ),
 
           // Divider
@@ -234,7 +234,7 @@ class _FeedCard extends StatelessWidget {
     );
   }
 
-  Widget _buildContent(String type) {
+  Widget _buildContent(BuildContext context, String type) {
     switch (type) {
       case 'notice':
         return Padding(
