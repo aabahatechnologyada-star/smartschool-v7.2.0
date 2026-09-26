@@ -68,25 +68,35 @@ jobs:
         continue-on-error: true
 
       - name: Build APK (release)
+        shell: bash
         run: |
+          set -o pipefail
           mkdir -p build
           flutter build apk --release 2>&1 | tee build/android-build.log
 
       - name: Debug APK paths
         if: success()
         run: |
-          echo "=== Debug APK paths from repo root ==="
-          find riyo_app/build -name "*.apk" -type f 2>/dev/null || echo "No APKs found"
+          echo "=== Debug APK paths (inside riyo_app) ==="
+          find build -name "*.apk" -type f 2>/dev/null || echo "No APKs found"
+
+      - name: Verify APK was created
+        if: success()
+        run: |
+          if [ ! -f build/app/outputs/flutter-apk/app-release.apk ]; then
+            echo "❌ APK not found. Contents of build/:"
+            find build -type f 2>/dev/null || echo "build folder empty"
+            exit 1
+          fi
+          echo "✅ APK created successfully"
+          ls -la build/app/outputs/flutter-apk/
 
       - name: Upload APK artifact
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: riyo-app-release-apk
-          path: |
-            riyo_app/build/app/outputs/flutter-apk/*.apk
-            riyo_app/build/app/outputs/flutter-apk/**/*.apk
-            riyo_app/build/app/outputs/**/*.apk
-            riyo_app/build/**/*.apk
+          path: riyo_app/build/app/outputs/flutter-apk/*.apk
           if-no-files-found: error
 
       - name: Upload build logs on failure
