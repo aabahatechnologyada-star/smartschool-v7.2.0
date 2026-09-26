@@ -71,7 +71,7 @@ class _ProfileScreenState extends State<ProfileScreen>
           emptyMessage: 'Please try again later.',
           emptyIcon: Icons.person_off_outlined,
           builder: (student) => _ProfileView(
-            student: student,
+            student: student!,
             tabController: _tabController,
             onRefresh: _loadProfile,
           ),

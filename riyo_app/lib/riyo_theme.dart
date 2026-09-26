@@ -240,7 +240,7 @@ class RiyoTheme {
       errorStyle: bodySmall.copyWith(color: white),
       floatingLabelStyle: bodyMedium.copyWith(color: white),
     ),
-    cardTheme: CardTheme(
+    cardTheme: CardThemeData(
       color: gray900,
       surfaceTintColor: Colors.transparent,
       elevation: 0,
@@ -286,7 +286,7 @@ class RiyoTheme {
       side: const BorderSide(color: gray700, width: 0.5),
       brightness: Brightness.dark,
     ),
-    dialogTheme: DialogTheme(
+    dialogTheme: DialogThemeData(
       backgroundColor: gray900,
       surfaceTintColor: Colors.transparent,
       elevation: 8,
@@ -350,7 +350,7 @@ class RiyoTheme {
       ),
       elevation: 4,
     ),
-    tabBarTheme: TabBarTheme(
+    tabBarTheme: TabBarThemeData(
       labelColor: white,
       unselectedLabelColor: gray600,
       indicatorColor: white,
@@ -550,7 +550,7 @@ class RiyoTheme {
       errorStyle: bodySmall.copyWith(color: black),
       floatingLabelStyle: bodyMedium.copyWith(color: black),
     ),
-    cardTheme: CardTheme(
+    cardTheme: CardThemeData(
       color: white,
       surfaceTintColor: Colors.transparent,
       elevation: 0,
@@ -581,7 +581,7 @@ class RiyoTheme {
       side: const BorderSide(color: gray300, width: 0.5),
       brightness: Brightness.light,
     ),
-    dialogTheme: DialogTheme(
+    dialogTheme: DialogThemeData(
       backgroundColor: white,
       surfaceTintColor: Colors.transparent,
       elevation: 8,
@@ -602,7 +602,7 @@ class RiyoTheme {
       ),
       modalBackgroundColor: white,
     ),
-    tabBarTheme: TabBarTheme(
+    tabBarTheme: TabBarThemeData(
       labelColor: black,
       unselectedLabelColor: gray600,
       indicatorColor: black,
