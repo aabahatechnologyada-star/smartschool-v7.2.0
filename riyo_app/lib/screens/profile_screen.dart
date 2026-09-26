@@ -71,7 +71,7 @@ class _ProfileScreenState extends State<ProfileScreen>
           emptyMessage: 'Please try again later.',
           emptyIcon: Icons.person_off_outlined,
           builder: (student) => _ProfileView(
-            student: student,
+            student: student!,
             tabController: _tabController,
             onRefresh: _loadProfile,
           ),
@@ -239,12 +239,13 @@ class _ProfileView extends StatelessWidget {
       ],
       body: TabBarView(
         controller: tabController,
-        children: [_buildPostsTab(), _buildMediaTab(), _buildLikesTab()],
+        children: [_buildPostsTab(context), _buildMediaTab(), _buildLikesTab()],
       ),
     );
   }
 
-  Widget _buildPostsTab() {
+  Widget _buildPostsTab(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final name = '${student['firstname'] ?? ''} ${student['lastname'] ?? ''}'
         .trim();
     final admissionNo = student['admission_no'] ?? '';

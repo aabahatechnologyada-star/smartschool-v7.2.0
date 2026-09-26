@@ -127,10 +127,12 @@ class _SearchScreenState extends State<SearchScreen>
         ),
       ),
       body: XRefreshIndicator(
-        onRefresh: () => setState(() {
-          _query = '';
-          _results.clear();
-        }),
+        onRefresh: () async {
+          setState(() {
+            _query = '';
+            _results.clear();
+          });
+        },
         child: StateBody<bool>(
           loading: _searching,
           error: false,

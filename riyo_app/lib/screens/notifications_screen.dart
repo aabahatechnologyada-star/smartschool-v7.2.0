@@ -239,7 +239,7 @@ class _NotificationTile extends StatelessWidget {
       decoration: BoxDecoration(
         color: read
             ? Colors.transparent
-            : RiyoTheme.gray900.withValues(alpha: 0.5),
+            : RiyoTheme.gray900.withOpacity(0.5),
         borderRadius: BorderRadius.circular(RiyoTheme.radiusMd),
         border: Border.all(
           color: read ? Colors.transparent : RiyoTheme.gray700,
