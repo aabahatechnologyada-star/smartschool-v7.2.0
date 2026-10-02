@@ -2,7 +2,6 @@ name: Deploy to InfinityFree FTP
 
 on:
   push:
-    branches: [main]
     paths-ignore:
       - 'riyo_app/**'
       - '.github/workflows/build_app.yml'
@@ -20,9 +19,9 @@ jobs:
       - name: Sync Files via FTP
         uses: SamKirkland/ftp-deploy-action@v4.3.5
         with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
+          server: ftpupload.net
+          username: if0_41358970
+          password: 6jhD3qCvd1eX8y
           port: 21
           server-dir: 'htdocs/'
           exclude: |
