@@ -8,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'api_config.dart';
 import 'demo/demo_service.dart';
+import 'infinityfree_challenge.dart';
 
 /// Holds the global 401 handler. When any API call returns 401, the handler
 /// clears the stored token and pops the navigator back to the login screen.
@@ -258,12 +259,29 @@ class RiyoApi {
 
   /// Hit the site root with browser-like headers. Any Set-Cookie headers are
   /// captured into [_cookieJar] so subsequent API calls carry them.
+  /// Solves the InfinityFree slowAES JS challenge automatically when encountered.
   Future<void> _warmup() async {
     try {
       final r = await _client
           .get(Uri.parse('${ApiConfig.BASE_URL}/'), headers: _commonHeaders())
           .timeout(ApiConfig.CONNECT_TIMEOUT);
       _absorbCookies(r);
+
+      // Solve InfinityFree slowAES JS challenge if returned
+      if (!_isJsonResponse(r) && r.body.contains('slowAES.decrypt')) {
+        final cookieVal = InfinityFreeChallenge.solve(r.body);
+        if (cookieVal != null && cookieVal.isNotEmpty) {
+          _cookieJar['__test'] = cookieVal;
+          // Follow up request with solved __test cookie to establish session
+          final r2 = await _client
+              .get(
+                Uri.parse('${ApiConfig.BASE_URL}/riyo_api/login?i=1'),
+                headers: _commonHeaders(),
+              )
+              .timeout(ApiConfig.CONNECT_TIMEOUT);
+          _absorbCookies(r2);
+        }
+      }
     } catch (_) {
       // warmup is best-effort
     }
