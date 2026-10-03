@@ -261,19 +261,54 @@ class _LoginScreenState extends State<LoginScreen> {
                               : const Text('Sign in'),
                         ),
                       ),
-                      const SizedBox(height: RiyoTheme.space3),
-                      SizedBox(
-                        width: double.infinity,
-                        child: OutlinedButton.icon(
-                          onPressed: _busy
-                              ? null
-                              : () {
-                                  _user.text = '1001';
-                                  _pass.text = 'demo123';
-                                  _login();
-                                },
-                          icon: const Icon(Icons.flash_on_rounded, size: 18),
-                          label: const Text('Try Demo Account (1001)'),
+                      const SizedBox(height: RiyoTheme.space4),
+                      Container(
+                        padding: const EdgeInsets.all(RiyoTheme.space3),
+                        decoration: BoxDecoration(
+                          color: RiyoTheme.gray800,
+                          borderRadius: BorderRadius.circular(RiyoTheme.radiusLg),
+                          border: Border.all(color: RiyoTheme.gray700, width: 0.5),
+                        ),
+                        child: Column(
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Icon(Icons.info_outline_rounded,
+                                    size: 16, color: RiyoTheme.gray400),
+                                const SizedBox(width: RiyoTheme.space1),
+                                Text(
+                                  'Demo Mode Credentials',
+                                  style: RiyoTheme.labelSmall.copyWith(
+                                    color: RiyoTheme.gray300,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: RiyoTheme.space1),
+                            Text(
+                              'Admission No: TEST001  •  Password: test123',
+                              style: RiyoTheme.labelSmall.copyWith(
+                                color: RiyoTheme.gray400,
+                              ),
+                            ),
+                            const SizedBox(height: RiyoTheme.space2),
+                            SizedBox(
+                              width: double.infinity,
+                              child: OutlinedButton.icon(
+                                onPressed: _busy
+                                    ? null
+                                    : () {
+                                        _user.text = 'TEST001';
+                                        _pass.text = 'test123';
+                                        _login();
+                                      },
+                                icon: const Icon(Icons.flash_on_rounded, size: 18),
+                                label: const Text('Use Demo Account'),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ],
@@ -306,6 +341,7 @@ class _MainAppState extends State<MainApp> with TickerProviderStateMixin {
   int _currentIndex = 0;
   late final PageController _pageController;
   late final List<Widget> _pages;
+  bool _showDemoBanner = false;
 
   @override
   void initState() {
@@ -317,6 +353,14 @@ class _MainAppState extends State<MainApp> with TickerProviderStateMixin {
       AttendanceScreen(),
       ProfileScreen(),
     ];
+    _checkDemoMode();
+  }
+
+  Future<void> _checkDemoMode() async {
+    final isDemo = await api.isDemoMode;
+    if (mounted && isDemo) {
+      setState(() => _showDemoBanner = true);
+    }
   }
 
   @override
@@ -341,11 +385,46 @@ class _MainAppState extends State<MainApp> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: PageView(
-        controller: _pageController,
-        physics: const NeverScrollableScrollPhysics(),
-        children: _pages,
-        onPageChanged: (index) => setState(() => _currentIndex = index),
+      body: Column(
+        children: [
+          if (_showDemoBanner)
+            Container(
+              color: RiyoTheme.gray800,
+              padding: const EdgeInsets.symmetric(
+                horizontal: RiyoTheme.space4,
+                vertical: RiyoTheme.space2,
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.science_outlined,
+                      size: 18, color: RiyoTheme.white),
+                  const SizedBox(width: RiyoTheme.space2),
+                  Expanded(
+                    child: Text(
+                      'Demo Mode – Sample Data Only',
+                      style: RiyoTheme.labelSmall.copyWith(
+                        color: RiyoTheme.white,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                  InkWell(
+                    onTap: () => setState(() => _showDemoBanner = false),
+                    child: const Icon(Icons.close_rounded,
+                        size: 18, color: RiyoTheme.gray400),
+                  ),
+                ],
+              ),
+            ),
+          Expanded(
+            child: PageView(
+              controller: _pageController,
+              physics: const NeverScrollableScrollPhysics(),
+              children: _pages,
+              onPageChanged: (index) => setState(() => _currentIndex = index),
+            ),
+          ),
+        ],
       ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _currentIndex,
