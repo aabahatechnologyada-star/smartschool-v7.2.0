@@ -272,7 +272,11 @@ class RiyoApi {
     final body = await _request(
       'POST',
       '/riyo_api/login',
-      body: {'admission_no': admissionNo, 'password': password},
+      body: {
+        'username': admissionNo,
+        'admission_no': admissionNo,
+        'password': password,
+      },
     );
     if (body['token'] is String) await saveToken(body['token'] as String);
     return body;
