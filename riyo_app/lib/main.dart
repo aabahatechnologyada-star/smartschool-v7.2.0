@@ -261,6 +261,21 @@ class _LoginScreenState extends State<LoginScreen> {
                               : const Text('Sign in'),
                         ),
                       ),
+                      const SizedBox(height: RiyoTheme.space3),
+                      SizedBox(
+                        width: double.infinity,
+                        child: OutlinedButton.icon(
+                          onPressed: _busy
+                              ? null
+                              : () {
+                                  _user.text = '1001';
+                                  _pass.text = 'demo123';
+                                  _login();
+                                },
+                          icon: const Icon(Icons.flash_on_rounded, size: 18),
+                          label: const Text('Try Demo Account (1001)'),
+                        ),
+                      ),
                     ],
                   ),
                 ),

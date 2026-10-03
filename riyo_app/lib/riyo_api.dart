@@ -266,6 +266,28 @@ class RiyoApi {
     String admissionNo,
     String password,
   ) async {
+    // Test student local login (no backend required)
+    final cleanAdmission = admissionNo.trim().toLowerCase();
+    if (cleanAdmission == 'demo' ||
+        cleanAdmission == '1001' ||
+        cleanAdmission == 'test' ||
+        password == 'demo123') {
+      const demoToken = 'mock-demo-token-1001';
+      await saveToken(demoToken);
+      return {
+        'status': 'success',
+        'token': demoToken,
+        'student': {
+          'firstname': 'John',
+          'lastname': 'Doe',
+          'admission_no': '1001',
+          'class': '10',
+          'section': 'A',
+          'gender': 'Male',
+        },
+      };
+    }
+
     // The InfinityFree JS challenge on the login POST is the most common
     // failure point — warm up again right before login so cookies are fresh.
     if (!_warmed) await _warmup();
@@ -323,8 +345,147 @@ class RiyoApi {
     if (tok == null) {
       throw const ApiException(ApiError.unauthorized, 'You are not logged in.');
     }
+
+    // Serve local demo data if logged in with test student
+    if (tok.startsWith('mock-demo-token')) {
+      return _demoDataForPath(path);
+    }
+
     final q = {'token': tok, if (query != null) ...query};
     return _request('GET', path, query: q);
+  }
+
+  Map<String, dynamic> _demoDataForPath(String path) {
+    if (path.contains('/profile')) {
+      return {
+        'status': 'success',
+        'student': {
+          'firstname': 'John',
+          'lastname': 'Doe',
+          'admission_no': '1001',
+          'class': '10',
+          'section': 'A',
+          'gender': 'Male',
+          'dob': '2008-05-15',
+          'father_name': 'Robert Doe',
+          'mother_name': 'Jane Doe',
+          'phone': '+1234567890',
+          'email': 'john.doe@riyo.edu',
+          'address': '123 School Lane, City',
+        },
+      };
+    } else if (path.contains('/attendance')) {
+      return {
+        'status': 'success',
+        'month': '2026-10',
+        'records': List.generate(
+          30,
+          (i) => {
+            'date': '2026-10-${(i + 1).toString().padLeft(2, '0')}',
+            'status': ['P', 'P', 'P', 'A', 'L'][i % 5],
+          },
+        ),
+      };
+    } else if (path.contains('/fees')) {
+      return {
+        'status': 'success',
+        'total_due': 0,
+        'paid_amount': 45000,
+        'transactions': [
+          {
+            'date': '2026-01-15',
+            'amount': 15000,
+            'description': 'Tuition - Jan',
+            'status': 'Paid',
+          },
+          {
+            'date': '2026-02-15',
+            'amount': 15000,
+            'description': 'Tuition - Feb',
+            'status': 'Paid',
+          },
+          {
+            'date': '2026-03-15',
+            'amount': 15000,
+            'description': 'Tuition - Mar',
+            'status': 'Paid',
+          },
+        ],
+      };
+    } else if (path.contains('/notices')) {
+      return {
+        'status': 'success',
+        'notices': [
+          {
+            'title': 'Mid-term Exams Schedule',
+            'message':
+                'Mid-term examinations will commence on October 15. Please check the timetable.',
+            'date': '2026-10-01',
+          },
+          {
+            'title': 'Parents-Teachers Meeting',
+            'message':
+                'Annual PTA meeting scheduled for October 20 at 4:00 PM in the auditorium.',
+            'date': '2026-09-28',
+          },
+        ],
+      };
+    } else if (path.contains('/examresults')) {
+      return {
+        'status': 'success',
+        'sessions': [
+          {
+            'session': '2025-2026',
+            'class': '10-A',
+            'exam_group': 'Mid Term',
+            'percentage': 88.5,
+            'grade': 'A',
+            'rank': '2',
+            'total_students': 35,
+            'total_get': 354,
+            'total_max': 400,
+            'teacher_remarks':
+                'Excellent performance across all subjects. Keep up the good work!',
+            'subjects': [
+              {
+                'subject': 'Mathematics',
+                'get_marks': 92,
+                'max_marks': 100,
+                'grade': 'A+',
+              },
+              {
+                'subject': 'Science',
+                'get_marks': 88,
+                'max_marks': 100,
+                'grade': 'A',
+              },
+              {
+                'subject': 'English',
+                'get_marks': 89,
+                'max_marks': 100,
+                'grade': 'A',
+              },
+              {
+                'subject': 'Social Studies',
+                'get_marks': 85,
+                'max_marks': 100,
+                'grade': 'A',
+              },
+            ],
+          },
+        ],
+      };
+    } else if (path.contains('/dashboard')) {
+      return {
+        'status': 'success',
+        'attendance_percentage': 95.2,
+        'fee_status': 'Paid',
+        'next_exam': 'Final Exam - Nov 15',
+        'pending_homework': 2,
+        'recent_notices': 2,
+      };
+    }
+    return {'status': 'success'};
   }
 
   /// Diagnostics: hit the setup endpoint and return whatever JSON it returns.
