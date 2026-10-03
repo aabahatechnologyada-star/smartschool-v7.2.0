@@ -4,8 +4,11 @@ import 'dart:io' show SocketException, HttpException, Cookie;
 
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'api_config.dart';
+import 'demo/demo_service.dart';
+import 'infinityfree_challenge.dart';
 
 /// Holds the global 401 handler. When any API call returns 401, the handler
 /// clears the stored token and pops the navigator back to the login screen.
@@ -38,11 +41,24 @@ class RiyoApi {
   void setUnauthorizedHandler(UnauthorizedHandler h) => _onUnauthorized = h;
 
   // ---- token storage ----
+  static const String _DEMO_KEY = 'is_demo_mode';
+
+  Future<bool> get isDemoMode async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_DEMO_KEY) ?? false;
+  }
+
+  Future<void> setDemoMode(bool enable) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_DEMO_KEY, enable);
+  }
+
   Future<String?> get token => _storage.read(key: ApiConfig.TOKEN_KEY);
   Future<void> saveToken(String t) =>
       _storage.write(key: ApiConfig.TOKEN_KEY, value: t);
   Future<void> clearToken() async {
     await _storage.delete(key: ApiConfig.TOKEN_KEY);
+    await setDemoMode(false);
   }
 
   // ---- cookie management ----
@@ -243,12 +259,29 @@ class RiyoApi {
 
   /// Hit the site root with browser-like headers. Any Set-Cookie headers are
   /// captured into [_cookieJar] so subsequent API calls carry them.
+  /// Solves the InfinityFree slowAES JS challenge automatically when encountered.
   Future<void> _warmup() async {
     try {
       final r = await _client
           .get(Uri.parse('${ApiConfig.BASE_URL}/'), headers: _commonHeaders())
           .timeout(ApiConfig.CONNECT_TIMEOUT);
       _absorbCookies(r);
+
+      // Solve InfinityFree slowAES JS challenge if returned
+      if (!_isJsonResponse(r) && r.body.contains('slowAES.decrypt')) {
+        final cookieVal = InfinityFreeChallenge.solve(r.body);
+        if (cookieVal != null && cookieVal.isNotEmpty) {
+          _cookieJar['__test'] = cookieVal;
+          // Follow up request with solved __test cookie to establish session
+          final r2 = await _client
+              .get(
+                Uri.parse('${ApiConfig.BASE_URL}/riyo_api/login?i=1'),
+                headers: _commonHeaders(),
+              )
+              .timeout(ApiConfig.CONNECT_TIMEOUT);
+          _absorbCookies(r2);
+        }
+      }
     } catch (_) {
       // warmup is best-effort
     }
@@ -266,13 +299,28 @@ class RiyoApi {
     String admissionNo,
     String password,
   ) async {
+    final cleanAdmission = admissionNo.trim().toUpperCase();
+    if ((cleanAdmission == 'TEST001' && password == 'test123') ||
+        cleanAdmission == 'DEMO' ||
+        cleanAdmission == '1001' ||
+        password == 'demo123') {
+      await setDemoMode(true);
+      await saveToken(DemoService.demoToken);
+      return DemoService.login(cleanAdmission, password);
+    }
+    await setDemoMode(false);
+
     // The InfinityFree JS challenge on the login POST is the most common
     // failure point — warm up again right before login so cookies are fresh.
     if (!_warmed) await _warmup();
     final body = await _request(
       'POST',
       '/riyo_api/login',
-      body: {'admission_no': admissionNo, 'password': password},
+      body: {
+        'username': admissionNo,
+        'admission_no': admissionNo,
+        'password': password,
+      },
     );
     if (body['token'] is String) await saveToken(body['token'] as String);
     return body;
@@ -315,12 +363,27 @@ class RiyoApi {
     String path, {
     Map<String, String>? query,
   }) async {
+    if (await isDemoMode) {
+      return _demoDataForPath(path);
+    }
+
     final tok = await token;
     if (tok == null) {
       throw const ApiException(ApiError.unauthorized, 'You are not logged in.');
     }
+
     final q = {'token': tok, if (query != null) ...query};
     return _request('GET', path, query: q);
+  }
+
+  Map<String, dynamic> _demoDataForPath(String path) {
+    if (path.contains('/profile')) return DemoService.getProfile();
+    if (path.contains('/attendance')) return DemoService.getAttendance();
+    if (path.contains('/fees')) return DemoService.getFees();
+    if (path.contains('/notices')) return DemoService.getNotices();
+    if (path.contains('/examresults')) return DemoService.getExamResults();
+    if (path.contains('/dashboard')) return DemoService.getDashboard();
+    return {'status': 'success'};
   }
 
   /// Diagnostics: hit the setup endpoint and return whatever JSON it returns.

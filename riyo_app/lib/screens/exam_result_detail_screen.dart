@@ -289,10 +289,10 @@ class _ExamResultDetailScreenState extends State<ExamResultDetailScreen> {
               vertical: RiyoTheme.space2,
             ),
             decoration: BoxDecoration(
-              color: _gradeColor(grade).withValues(alpha: 0.15),
+              color: _gradeColor(grade).withOpacity(0.15),
               borderRadius: BorderRadius.circular(RiyoTheme.radiusFull),
               border: Border.all(
-                color: _gradeColor(grade).withValues(alpha: 0.3),
+                color: _gradeColor(grade).withOpacity(0.3),
                 width: 1,
               ),
             ),
@@ -382,7 +382,7 @@ class _ExamResultDetailScreenState extends State<ExamResultDetailScreen> {
         color: RiyoTheme.gray900,
         borderRadius: BorderRadius.circular(RiyoTheme.radiusLg),
         border: Border.all(
-          color: RiyoTheme.gray700.withValues(alpha: 0.5),
+          color: RiyoTheme.gray700.withOpacity(0.5),
           width: 0.5,
         ),
       ),
@@ -579,6 +579,65 @@ class _ExamResultDetailScreenState extends State<ExamResultDetailScreen> {
       return dateStr;
     }
   }
+
+  List<Widget> _buildAppBarActions() {
+    if (_sessions.length > 1) {
+      return [
+        Padding(
+          padding: const EdgeInsets.only(right: RiyoTheme.space2),
+          child: DropdownButtonHideUnderline(
+            child: DropdownButton<int>(
+              value: _selectedSessionIndex,
+              icon: const Icon(
+                Icons.keyboard_arrow_down_rounded,
+                color: RiyoTheme.white,
+              ),
+              dropdownColor: RiyoTheme.gray900,
+              style: RiyoTheme.bodyMedium.copyWith(color: RiyoTheme.white),
+              items: List.generate(_sessions.length, (index) {
+                final s = _sessions[index];
+                final name =
+                    s['session'] as String? ??
+                    s['session_name'] as String? ??
+                    'Session ${index + 1}';
+                final pct = (s['percentage'] as num?)?.toDouble() ?? 0.0;
+                return DropdownMenuItem(
+                  value: index,
+                  child: Text('$name  •  ${pct.toStringAsFixed(1)}%'),
+                );
+              }),
+              onChanged: (value) {
+                if (value != null) setState(() => _selectedSessionIndex = value);
+              },
+            ),
+          ),
+        ),
+        IconButton(
+          icon: const Icon(Icons.share_outlined),
+          onPressed: () {},
+          tooltip: 'Share',
+        ),
+        IconButton(
+          icon: const Icon(Icons.more_horiz_rounded),
+          onPressed: () {},
+          tooltip: 'More',
+        ),
+      ];
+    }
+
+    return [
+      IconButton(
+        icon: const Icon(Icons.share_outlined),
+        onPressed: () {},
+        tooltip: 'Share',
+      ),
+      IconButton(
+        icon: const Icon(Icons.more_horiz_rounded),
+        onPressed: () {},
+        tooltip: 'More',
+      ),
+    ];
+  }
 }
 
 class _SubjectTile extends StatelessWidget {
@@ -628,10 +687,10 @@ class _SubjectTile extends StatelessWidget {
                     vertical: RiyoTheme.space1,
                   ),
                   decoration: BoxDecoration(
-                    color: gradeColor.withValues(alpha: 0.15),
+                    color: gradeColor.withOpacity(0.15),
                     borderRadius: BorderRadius.circular(RiyoTheme.radiusFull),
                     border: Border.all(
-                      color: gradeColor.withValues(alpha: 0.3),
+                      color: gradeColor.withOpacity(0.3),
                       width: 1,
                     ),
                   ),
@@ -706,64 +765,6 @@ class _SubjectTile extends StatelessWidget {
   }
 }
 
-List<Widget> _buildAppBarActions() {
-  if (_sessions.length > 1) {
-    return [
-      Padding(
-        padding: const EdgeInsets.only(right: RiyoTheme.space2),
-        child: DropdownButtonHideUnderline(
-          child: DropdownButton<int>(
-            value: _selectedSessionIndex,
-            icon: const Icon(
-              Icons.keyboard_arrow_down_rounded,
-              color: RiyoTheme.white,
-            ),
-            dropdownColor: RiyoTheme.gray900,
-            style: RiyoTheme.bodyMedium.copyWith(color: RiyoTheme.white),
-            items: List.generate(_sessions.length, (index) {
-              final s = _sessions[index];
-              final name =
-                  s['session'] as String? ??
-                  s['session_name'] as String? ??
-                  'Session ${index + 1}';
-              final pct = (s['percentage'] as num?)?.toDouble() ?? 0.0;
-              return DropdownMenuItem(
-                value: index,
-                child: Text('$name  •  ${pct.toStringAsFixed(1)}%'),
-              );
-            }),
-            onChanged: (value) {
-              if (value != null) setState(() => _selectedSessionIndex = value);
-            },
-          ),
-        ),
-      ),
-      IconButton(
-        icon: const Icon(Icons.share_outlined),
-        onPressed: () {},
-        tooltip: 'Share',
-      ),
-      IconButton(
-        icon: const Icon(Icons.more_horiz_rounded),
-        onPressed: () {},
-        tooltip: 'More',
-      ),
-    ];
-  }
-
-  return [
-    IconButton(
-      icon: const Icon(Icons.share_outlined),
-      onPressed: () {},
-      tooltip: 'Share',
-    ),
-    IconButton(
-      icon: const Icon(Icons.more_horiz_rounded),
-      onPressed: () {},
-      tooltip: 'More',
-    ),
-  ];
-}
 
 class _InfoRow extends StatelessWidget {
   final IconData icon;

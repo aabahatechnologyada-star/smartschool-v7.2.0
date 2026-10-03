@@ -68,7 +68,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
           loading: _loading,
           error: _error,
           data: _attendance,
-          isEmpty: (d) => d == null || (d['records'] as List?)?.isEmpty ?? true,
+          isEmpty: (d) => d == null || ((d['records'] as List?)?.isEmpty ?? true),
           onRetry: _loadAttendance,
           skeleton: ListView.builder(
             padding: const EdgeInsets.only(top: RiyoTheme.space2),
@@ -292,7 +292,7 @@ class _AttendanceRecordTile extends StatelessWidget {
             width: 48,
             height: 48,
             decoration: BoxDecoration(
-              color: statusColor.withValues(alpha: 0.15),
+              color: statusColor.withOpacity(0.15),
               shape: BoxShape.circle,
             ),
             child: Icon(statusIcon, color: statusColor, size: 24),
@@ -351,7 +351,7 @@ class _AttendanceRecordTile extends StatelessWidget {
                   vertical: RiyoTheme.space1,
                 ),
                 decoration: BoxDecoration(
-                  color: statusColor.withValues(alpha: 0.15),
+                  color: statusColor.withOpacity(0.15),
                   borderRadius: BorderRadius.circular(RiyoTheme.radiusFull),
                 ),
                 child: Text(

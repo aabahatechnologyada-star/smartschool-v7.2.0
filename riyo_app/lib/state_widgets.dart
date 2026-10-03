@@ -78,7 +78,7 @@ class _ShimmerEffectState extends State<_ShimmerEffect>
                 end: Alignment.centerRight,
                 colors: [
                   RiyoTheme.gray800,
-                  RiyoTheme.gray700.withValues(alpha: _animation.value),
+                  RiyoTheme.gray700.withOpacity(_animation.value),
                   RiyoTheme.gray800,
                 ],
                 stops: const [0.0, 0.5, 1.0],
@@ -304,6 +304,7 @@ class ErrorView extends StatelessWidget {
           return Icons.search_off_rounded;
         case ApiError.invalidResponse:
           return Icons.warning_amber_rounded;
+        case ApiError.rateLimited:
         case ApiError.serverError:
         case ApiError.badRequest:
         case ApiError.unknown:
